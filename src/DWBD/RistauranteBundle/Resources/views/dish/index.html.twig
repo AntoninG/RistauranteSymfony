@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Dishes list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>State</th>
+                <th>Homemade</th>
+                <th>Image</th>
+                <th>Category</th>
+                <th>Allergens</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dish in dishes %}
+            <tr>
+                <td><a href="{{ path('dish_show', { 'id': dish.id }) }}">{{ dish.id }}</a></td>
+                <td>{{ dish.title }}</td>
+                <td>{{ dish.description }}</td>
+                <td>{{ dish.price }}</td>
+                <td>{{ dish.state }}</td>
+                <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
+                <td>{{ dish.image }}</td>
+                <td>{{ dish.category }}</td>
+                <td>{% if dish.allergens %}{{ dish.allergens|join(', ') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('dish_show', { 'id': dish.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('dish_edit', { 'id': dish.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('dish_new') }}">Create a new dish</a>
+        </li>
+    </ul>
+{% endblock %}

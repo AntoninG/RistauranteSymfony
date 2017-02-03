@@ -1,0 +1,38 @@
+security:
+
+    encoders:
+        DWBD\SecurityBundle\Entity\User:
+            algorithm: bcrypt
+            cost: 12
+
+    providers:
+        db_provider:
+            entity:
+                class: DWBDSecurityBundle:User
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            anonymous:  ~
+            provider:   db_provider
+            form_login:
+                login_path: /login
+                check_path: /login
+            logout:
+                path:   /logout
+                target: /login
+                invalidate_session:   true
+
+    role_hierarchy:
+            ROLE_EDITOR:       ROLE_WAITER
+            ROLE_REVIEWER:     ROLE_EDITOR
+            ROLE_CHIEF:        ROLE_REVIEWER
+            ROLE_ADMIN:        ROLE_CHIEF
+
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, roles: ROLE_ADMIN }

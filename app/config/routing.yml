@@ -1,0 +1,17 @@
+dwbd_ristaurante_dish:
+    resource: "@DWBDRistauranteBundle/Controller/DishController.php"
+    type:     annotation
+
+dwbd_ristaurante_menu:
+    resource: "@DWBDRistauranteBundle/Controller/MenuController.php"
+    type:     annotation
+
+dwbd_security:
+    resource: "@DWBDSecurityBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+dwbd_ristaurante:
+    resource: "@DWBDRistauranteBundle/Controller/"
+    type:     annotation
+    prefix:   /

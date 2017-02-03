@@ -1,0 +1,4 @@
+services:
+#    dwbd_security.example:
+#        class: DWBD\SecurityBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
