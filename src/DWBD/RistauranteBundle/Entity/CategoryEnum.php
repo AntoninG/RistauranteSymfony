@@ -14,7 +14,7 @@ abstract class CategoryEnum
 	 * @return array
 	 * 		id => translation
 	 */
-	public static function getCategoriesForFrom()
+	public static function getCategoriesForForm()
 	{
 		return array(
 			self::ENTREE 	=> 'Entree',

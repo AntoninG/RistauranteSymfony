@@ -54,7 +54,7 @@ class CreateUserCommand extends ContainerAwareCommand
 				->setUsername($username)
 				->setPassword($hash)
 				->setEmail($email)
-				->setRoles([$role]);
+				->setRole([$role]);
 
 			$manager = $this->getContainer()->get('doctrine')->getManager();
 			$manager->persist($user);

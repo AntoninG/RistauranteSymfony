@@ -3,6 +3,7 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Dish;
+use DWBD\RistauranteBundle\Entity\StateEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +46,7 @@ class DishController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $dish->setState(StateEnum::STATE_DRAFT);
             $em->persist($dish);
             $em->flush($dish);
 

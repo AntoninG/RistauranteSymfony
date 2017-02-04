@@ -47,11 +47,11 @@ class User implements UserInterface, \Serializable
     private $email;
 
 	/**
-	 * @var array
+	 * @var string
 	 *
-	 * @ORM\Column(name="roles", type="array")
+	 * @ORM\Column(name="role", type="string")
 	 */
-    private $roles;
+    private $role;
 
 	/**
 	 * @var string
@@ -271,19 +271,19 @@ class User implements UserInterface, \Serializable
 	 *
 	 * @return array
 	 */
-	public function getRoles()
+	public function getRole()
 	{
-		return $this->roles;
+		return [$this->role];
 	}
 
 	/**
-	 * Set the user's roles
+	 * Set the user's role
 	 *
-	 * @param array $roles
+	 * @param string $role
 	 */
-	public function setRoles($roles)
+	public function setRole($role)
 	{
-		$this->roles = $roles;
+		$this->role = $role;
 	}
 
 	/**

@@ -21,39 +21,43 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		// Get menus without dishes
+		$menuRep = $this
+			->getContainer()
+			->get("doctrine")
+			->getManager()
+			->getRepository("DWBDRistauranteBundle:Menu");
+
 		try {
-			$queryBuilder = $this
-				->getContainer()
-				->get("doctrine")
-				->getManager()
-				->getRepository("DWBDRistauranteBundle:Menu");
-			/*
-				->createQueryBuilder('m');
-
-			$queryJoin = $queryBuilder
-				->select('m.id')
-				->innerJoin('m.dishes', 'd')
-				->getQuery()
-				->getArrayResult();
-
-			$query = $queryBuilder
-				->select(['m.id', 'm.title'])
-				->where($queryBuilder->expr()->notIn('m.id', ':queryJoin'))
-				->setParameter(':queryJoin', $queryJoin)
-				->getQuery();
-
-			$result = $query->getResult();
-
-			$output->writeln($query->getDQL());*/
-
-			$menus = $queryBuilder->getMenusWithoutDishes();
-			foreach ($menus as $menu) {
-				$output->writeln($menu->getTitle());
-			}
-
-			//TODO retrieve admin and send mail
+			$menus = $menuRep->getMenusWithoutDishes();
 		} catch (QueryException $e) {
 			$output->writeln($e->getMessage());
+			return;
+		}
+
+		// Nothing to do
+		if (empty($menus)) {
+			$output->writeln('No menus without dishes. End of task.');
+			return;
+		}
+
+		// We need to retrieve the admin users
+		try  {
+			$userRep = $this->getContainer()->get("doctrine")->getManager()->getRepository("DWBDSecurityBundle:User");
+			$admins	 = $userRep->findByRole("ROLE_WAITER");
+			if (!empty($admins)) {
+				shuffle($admins);
+				$admin = array_shift($admins);
+				// TODO send mail
+			} else {
+				$output->writeln('None administrators to contact, here are the menus concerned :');
+				foreach ($menus as $menu) {
+					$output->writeln($menu->getId().' : '.$menu->getTitle().' (by '.$menu->getAuthor()->getLogin().')');
+				}
+			}
+		}catch (QueryException $e) {
+			$output->writeln($e->getMessage());
+			return;
 		}
 	}
 }

@@ -3,6 +3,7 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Menu;
+use DWBD\RistauranteBundle\Entity\StateEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +45,10 @@ class MenuController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em   = $this->getDoctrine()->getManager();
+            $user = $this->get("security.token_storage")->getToken()->getUser();
+            $menu->setAuthor($user)
+				 ->setState(StateEnum::STATE_DRAFT);
             $em->persist($menu);
             $em->flush($menu);
 
