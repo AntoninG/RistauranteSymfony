@@ -11,14 +11,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component
 /**
  * Dish controller.
  *
- * @Route("dish")
+ * @Route("dishes")
  */
 class DishController extends Controller
 {
     /**
      * Lists all dish entities.
      *
-     * @Route("/", name="dish_index")
+     * @Route("/index", name="dish_index")
      * @Method("GET")
      */
     public function indexAction()
@@ -62,7 +62,7 @@ class DishController extends Controller
     /**
      * Finds and displays a dish entity.
      *
-     * @Route("/{id}", name="dish_show")
+     * @Route("/show/{id}", name="dish_show")
      * @Method("GET")
      */
     public function showAction(Dish $dish)
@@ -78,7 +78,7 @@ class DishController extends Controller
     /**
      * Displays a form to edit an existing dish entity.
      *
-     * @Route("/{id}/edit", name="dish_edit")
+     * @Route("/edit/{id}", name="dish_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Dish $dish)
@@ -103,7 +103,7 @@ class DishController extends Controller
     /**
      * Deletes a dish entity.
      *
-     * @Route("/{id}", name="dish_delete")
+     * @Route("/delete/{id}", name="dish_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Dish $dish)

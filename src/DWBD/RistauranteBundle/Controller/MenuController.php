@@ -18,7 +18,7 @@ class MenuController extends Controller
     /**
      * Lists all menu entities.
      *
-     * @Route("/", name="menus_index")
+     * @Route("/index", name="menus_index")
      * @Method("GET")
      */
     public function indexAction()
@@ -40,13 +40,14 @@ class MenuController extends Controller
      */
     public function newAction(Request $request)
     {
+		$options = array('isCreation' => true);
         $menu = new Menu();
-        $form = $this->createForm('DWBD\RistauranteBundle\Form\MenuType', $menu);
+        $form = $this->createForm('DWBD\RistauranteBundle\Form\MenuType', $menu, $options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em   = $this->getDoctrine()->getManager();
-            $user = $this->get("security.token_storage")->getToken()->getUser();
+			$user = $this->get("security.token_storage")->getToken()->getUser();
             $menu->setAuthor($user)
 				 ->setState(StateEnum::STATE_DRAFT);
             $em->persist($menu);
@@ -64,7 +65,7 @@ class MenuController extends Controller
     /**
      * Finds and displays a menu entity.
      *
-     * @Route("/{id}", name="menus_show")
+     * @Route("/show/{id}", name="menus_show")
      * @Method("GET")
      */
     public function showAction(Menu $menu)
@@ -80,7 +81,7 @@ class MenuController extends Controller
     /**
      * Displays a form to edit an existing menu entity.
      *
-     * @Route("/{id}/edit", name="menus_edit")
+     * @Route("/edit/{id}", name="menus_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, Menu $menu)
@@ -105,7 +106,7 @@ class MenuController extends Controller
     /**
      * Deletes a menu entity.
      *
-     * @Route("/{id}", name="menus_delete")
+     * @Route("/delete/{id}", name="menus_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Menu $menu)

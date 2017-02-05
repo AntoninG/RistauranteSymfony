@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,7 +35,7 @@ class DishType extends AbstractType
 				'label'    => 'Price'
 			))
 			->add('homemade', CheckboxType::class, array(
-				'data' 	=> '1',
+				'data' 	=> true,
 				'label' => 'Homemade'
 			))
 			->add('image', FileType::class, array(
@@ -46,6 +45,12 @@ class DishType extends AbstractType
 				'choices' => CategoryEnum::getCategoriesForForm(),
 				'label'   => 'Category'
 			));
+
+		if (empty($options['isCreation'])) {
+			$builder->add('state', ChoiceType::class, array(
+				'choices' => StateEnum::getStatesForForm(),
+			));
+		}
     }
     
     /**

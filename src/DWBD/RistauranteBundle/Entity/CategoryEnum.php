@@ -12,16 +12,16 @@ abstract class CategoryEnum
 
 	/**
 	 * @return array
-	 * 		id => translation
+	 *        id => translation
 	 */
 	public static function getCategoriesForForm()
 	{
 		return array(
-			self::ENTREE 	=> 'Entree',
-			self::DISH 		=> 'Main dish',
-			self::DESSERT	=> 'Dessert',
-			self::CHEESE_PLATE => 'Cheese plate',
-			self::APPETIZER => 'Appetizer'
+			'Entree' 	=> self::ENTREE,
+			'Main dish' => self::DISH,
+			'Dessert' 	=> self::DESSERT,
+			'Cheese plate' => self::CHEESE_PLATE,
+			'Appetizer' => self::APPETIZER
 		);
 	}
 

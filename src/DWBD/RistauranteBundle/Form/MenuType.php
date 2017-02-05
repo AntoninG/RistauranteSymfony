@@ -2,7 +2,10 @@
 
 namespace DWBD\RistauranteBundle\Form;
 
+use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\SecurityBundle\Entity\RoleEnum;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -34,11 +37,16 @@ class MenuType extends AbstractType
 				'label'	   => 'Display Order',
 				'scale'    => 0
 			))
-			->add('state', ChoiceType::class, array(
-				'choices' => StateEnum::getStatesForForm(),
+			->add('dishes', EntityType::class, array(
+				'label'		=> 'Dishes',
+				'class' 	=> 'DWBDRistauranteBundle:Dish',
+				'choice_label' => function(Dish $dish) {
+					return $dish->getTitle();
+				},
+				'multiple'	=> true
 			));
     }
-    
+
     /**
      * {@inheritdoc}
      */

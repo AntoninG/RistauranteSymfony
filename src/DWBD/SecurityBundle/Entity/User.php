@@ -2,6 +2,7 @@
 
 namespace DWBD\SecurityBundle\Entity;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\RistauranteBundle\Entity\Dish;
@@ -50,6 +51,14 @@ class User implements UserInterface, \Serializable
 	 * @var string
 	 *
 	 * @ORM\Column(name="role", type="string")
+	 * @Enum({
+	 *		RoleEnum::USER,
+	 *		RoleEnum::WAITER,
+	 *		RoleEnum::EDITOR,
+	 *		RoleEnum::REVIEWER,
+	 *		RoleEnum::CHIEF,
+	 *		RoleEnum::ADMIN
+	 * })
 	 */
     private $role;
 
