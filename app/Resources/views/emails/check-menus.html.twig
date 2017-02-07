@@ -10,8 +10,8 @@
     <tbody>
     {% for menu in menus %}
     <tr>
-        <td><a href="{{ url("menus_edit", {id: menu.id }) }}">{{ menu.title }}</a></td>
-        <td><a href="{{ url("menus_edit", {id: menu.id }) }}">{% if menu.author %}{{ menu.author.username }}{% else %}N/A{% endif %}</a></td>
+        <td><a href="{{ absolute_url("menus_edit", {id: menu.id }) }}">{{ menu.title }}</a></td>
+        <td><a href="{{ absolute_url("menus_edit", {id: menu.id }) }}">{% if menu.author %}{{ menu.author.username }}{% else %}N/A{% endif %}</a></td>
     </tr>
     {% endfor %}
     </tbody>

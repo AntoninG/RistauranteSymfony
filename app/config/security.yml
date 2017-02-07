@@ -35,8 +35,3 @@ security:
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: /delete/, roles: ROLE_CHIEF }
-        - { path: /(new|edit)/?, roles: ROLE_EDITOR }
-        - { path: ^/menus, roles: ROLE_WAITER }
-        - { path: ^/reservation, roles: ROLE_USER }
