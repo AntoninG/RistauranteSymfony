@@ -1,12 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
+{% block content %}
     <h1>User creation</h1>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
+    {{ form_errors(form) }}
+    <div>
+        {{ form_label(form.username) }}
+        {{ form_errors(form.username) }}
+        {{ form_widget(form.username) }}
+    </div>
+    <input type="submit" value="Create" />
 
     <ul>
         <li>

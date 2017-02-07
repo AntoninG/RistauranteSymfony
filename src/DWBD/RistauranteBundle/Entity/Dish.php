@@ -3,9 +3,11 @@
 namespace DWBD\RistauranteBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Dish
@@ -27,7 +29,13 @@ class Dish
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255, unique=true)
+     * @ORM\Column(name="title", type="string", length=80, unique=true)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Length(min="5", max="80")
+	 * @Assert\Type(type="string")
      */
     private $title;
 
@@ -35,6 +43,10 @@ class Dish
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+	 *
+	 * @Assert\NotBlank()
+	 * @Assert\Length(max="6000", min="15")
+	 * @Assert\Type(type="string")
      */
     private $description;
 
@@ -42,6 +54,11 @@ class Dish
      * @var float
      *
      * @ORM\Column(name="price", type="float")
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="float")
      */
     private $price;
 
@@ -55,6 +72,11 @@ class Dish
 	 *     StateEnum::STATE_REFUSED,
 	 *     StateEnum::STATE_VALIDATED
 	 * })
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="integer")
      */
     private $state;
 
@@ -62,13 +84,23 @@ class Dish
      * @var bool
      *
      * @ORM\Column(name="homemade", type="boolean")
+	 *
+	 * @Assert\Type(type="bool")
      */
     private $homemade;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="image", type="text")
+	 * @ORM\Column(name="image", type="text", nullable=true)
+	 *
+	 * @Assert\NotBlank()
+	 * @Assert\Image(
+	 *     mimeTypes={"image/bmp", "image/png", "image/gif", "image/jpg", "image/jpeg"},
+	 *     mimeTypesMessage="Only bmp, gif, png and jpg allowed",
+	 *     maxSize="20M",
+	 *     maxSizeMessage="20M maximum"
+	 *	)
 	 */
     private $image;
 
@@ -83,6 +115,10 @@ class Dish
 	 *     	CategoryEnum::CHEESE_PLATE,
 	 *     	CategoryEnum::APPETIZER
 	 * })
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="integer")
 	 */
     private $category;
 

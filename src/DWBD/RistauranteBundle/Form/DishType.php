@@ -3,6 +3,7 @@
 namespace DWBD\RistauranteBundle\Form;
 
 use DWBD\RistauranteBundle\Entity\CategoryEnum;
+use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -39,7 +40,8 @@ class DishType extends AbstractType
 				'label' => 'Homemade'
 			))
 			->add('image', FileType::class, array(
-				'label' => 'Image'
+				'label' => 'Image',
+				''
 			))
 			->add('category', ChoiceType::class, array(
 				'choices' => CategoryEnum::getCategoriesForForm(),
@@ -59,7 +61,7 @@ class DishType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'DWBD\RistauranteBundle\Entity\Dish'
+            'data_class' => Dish::class
         ));
     }
 

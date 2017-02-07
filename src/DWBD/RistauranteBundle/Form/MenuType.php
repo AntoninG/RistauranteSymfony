@@ -3,6 +3,7 @@
 namespace DWBD\RistauranteBundle\Form;
 
 use DWBD\RistauranteBundle\Entity\Dish;
+use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -53,7 +54,7 @@ class MenuType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'DWBD\RistauranteBundle\Entity\Menu'
+            'data_class' => Menu::class
         ));
     }
 

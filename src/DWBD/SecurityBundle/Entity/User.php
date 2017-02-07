@@ -3,11 +3,13 @@
 namespace DWBD\SecurityBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\Menu;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -29,14 +31,32 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255, unique=true)
+     * @ORM\Column(name="username", type="string", length=60, unique=true)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
+	 * @Assert\Length(
+	 *     min=5,
+	 *     max=60
+	 * )
      */
     private $username;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=64)
+     * @ORM\Column(name="password", type="string", length=72)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
+	 * @Assert\Length(
+	 *     min="8",
+	 *     max="72"
+	 * )
      */
     private $password;
 
@@ -44,13 +64,18 @@ class User implements UserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, unique=true)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Email()
      */
     private $email;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="role", type="string")
+	 * @ORM\Column(name="role", type="string", length=40)
 	 * @Enum({
 	 *		RoleEnum::USER,
 	 *		RoleEnum::WAITER,
@@ -59,6 +84,11 @@ class User implements UserInterface, \Serializable
 	 *		RoleEnum::CHIEF,
 	 *		RoleEnum::ADMIN
 	 * })
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
 	 */
     private $role;
 
@@ -278,12 +308,13 @@ class User implements UserInterface, \Serializable
 	/**
 	 * Get the user's roles
 	 *
-	 * @return array
+	 * @return string
 	 */
 	public function getRole()
 	{
 		return [$this->role];
 	}
+
 
 	/**
 	 * Set the user's role

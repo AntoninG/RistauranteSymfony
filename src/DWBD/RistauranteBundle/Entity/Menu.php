@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Menu
@@ -27,7 +28,12 @@ class Menu
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255, unique=true)
+     * @ORM\Column(name="title", type="string", length=80, unique=true)
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Length(min="5", max="80")
+	 * @Assert\Type(type="string")
      */
     private $title;
 
@@ -35,6 +41,10 @@ class Menu
      * @var float
      *
      * @ORM\Column(name="price", type="float")
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="float")
      */
     private $price;
 
@@ -42,6 +52,10 @@ class Menu
      * @var int
      *
      * @ORM\Column(name="displayOrder", type="integer")
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="integer")
      */
     private $displayOrder;
 
@@ -55,6 +69,10 @@ class Menu
 	 *     StateEnum::STATE_REFUSED,
 	 *     StateEnum::STATE_VALIDATED
 	 * })
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="integer")
      */
     private $state;
 

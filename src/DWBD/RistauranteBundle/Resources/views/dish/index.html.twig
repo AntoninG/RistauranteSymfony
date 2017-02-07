@@ -1,12 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
+{% block content %}
     <h1>Dishes list</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Price</th>
@@ -21,8 +20,7 @@
         <tbody>
         {% for dish in dishes %}
             <tr>
-                <td><a href="{{ path('dish_show', { 'id': dish.id }) }}">{{ dish.id }}</a></td>
-                <td>{{ dish.title }}</td>
+                <td><a href="{{ path('dishes_show', { 'id': dish.id }) }}">{{ dish.title }}</a></td>
                 <td>{{ dish.description }}</td>
                 <td>{{ dish.price }}</td>
                 <td>{{ dish.state }}</td>
@@ -33,10 +31,10 @@
                 <td>
                     <ul>
                         <li>
-                            <a href="{{ path('dish_show', { 'id': dish.id }) }}">show</a>
+                            <a href="{{ path('dishes_show', { 'id': dish.id }) }}">show</a>
                         </li>
                         <li>
-                            <a href="{{ path('dish_edit', { 'id': dish.id }) }}">edit</a>
+                            <a href="{{ path('dishes_edit', { 'id': dish.id }) }}">edit</a>
                         </li>
                     </ul>
                 </td>
@@ -47,7 +45,7 @@
 
     <ul>
         <li>
-            <a href="{{ path('dish_new') }}">Create a new dish</a>
+            <a href="{{ path('dishes_new') }}">Create a new dish</a>
         </li>
     </ul>
 {% endblock %}

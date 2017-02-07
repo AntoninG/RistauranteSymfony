@@ -4,6 +4,8 @@ namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Form\DishType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -18,8 +20,9 @@ class DishController extends Controller
     /**
      * Lists all dish entities.
      *
-     * @Route("/index", name="dish_index")
+     * @Route("/index", name="dishes_index")
      * @Method("GET")
+	 * @Security("has_role('ROLE_WAITER')")
      */
     public function indexAction()
     {
@@ -35,13 +38,14 @@ class DishController extends Controller
     /**
      * Creates a new dish entity.
      *
-     * @Route("/new", name="dish_new")
+     * @Route("/new", name="dishes_new")
      * @Method({"GET", "POST"})
+	 * @Security("has_role('ROLE_EDITOR')")
      */
     public function newAction(Request $request)
     {
         $dish = new Dish();
-        $form = $this->createForm('DWBD\RistauranteBundle\Form\DishType', $dish);
+        $form = $this->createForm(DishType::class, $dish);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -50,7 +54,7 @@ class DishController extends Controller
             $em->persist($dish);
             $em->flush($dish);
 
-            return $this->redirectToRoute('dish_show', array('id' => $dish->getId()));
+            return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
         }
 
         return $this->render('DWBDRistauranteBundle:dish:new.html.twig', array(
@@ -62,8 +66,9 @@ class DishController extends Controller
     /**
      * Finds and displays a dish entity.
      *
-     * @Route("/show/{id}", name="dish_show")
+     * @Route("/show/{id}", name="dishes_show")
      * @Method("GET")
+	 * @Security("has_role('ROLE_WAITER')")
      */
     public function showAction(Dish $dish)
     {
@@ -78,19 +83,20 @@ class DishController extends Controller
     /**
      * Displays a form to edit an existing dish entity.
      *
-     * @Route("/edit/{id}", name="dish_edit")
+     * @Route("/edit/{id}", name="dishes_edit")
      * @Method({"GET", "POST"})
+	 * @Security("has_role('ROLE_EDITOR')")
      */
     public function editAction(Request $request, Dish $dish)
     {
         $deleteForm = $this->createDeleteForm($dish);
-        $editForm = $this->createForm('DWBD\RistauranteBundle\Form\DishType', $dish);
+        $editForm = $this->createForm(DishType::class, $dish);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('dish_edit', array('id' => $dish->getId()));
+            return $this->redirectToRoute('dishes_edit', array('id' => $dish->getId()));
         }
 
         return $this->render('DWBDRistauranteBundle:dish:edit.html.twig', array(
@@ -103,8 +109,9 @@ class DishController extends Controller
     /**
      * Deletes a dish entity.
      *
-     * @Route("/delete/{id}", name="dish_delete")
+     * @Route("/delete/{id}", name="dishes_delete")
      * @Method("DELETE")
+	 * @Security("has_role('ROLE_CHIEF')")
      */
     public function deleteAction(Request $request, Dish $dish)
     {
@@ -117,7 +124,7 @@ class DishController extends Controller
             $em->flush($dish);
         }
 
-        return $this->redirectToRoute('dish_index');
+        return $this->redirectToRoute('dishes_index');
     }
 
     /**
@@ -130,7 +137,7 @@ class DishController extends Controller
     private function createDeleteForm(Dish $dish)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('dish_delete', array('id' => $dish->getId())))
+            ->setAction($this->generateUrl('dishes_delete', array('id' => $dish->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;

@@ -17,7 +17,7 @@ class RoleEnum
 	CONST CHIEF  = "ROLE_CHIEF";
 	CONST ADMIN  = "ROLE_ADMIN";
 
-	public function getRolesForForm()
+	public static function getRolesForForm()
 	{
 		return array(
 			self::USER 	 => self::USER,
@@ -29,7 +29,7 @@ class RoleEnum
 		);
 	}
 
-	public function getRoles()
+	public static function getRoles()
 	{
 		return array(
 			self::USER,

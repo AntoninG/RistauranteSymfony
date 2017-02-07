@@ -2,7 +2,10 @@
 
 namespace DWBD\RistauranteBundle\Entity;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Reservation
@@ -25,6 +28,11 @@ class Reservation
      * @var \DateTime
      *
      * @ORM\Column(name="date", type="date")
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
      */
     private $date;
 
@@ -32,6 +40,11 @@ class Reservation
      * @var \DateTime
      *
      * @ORM\Column(name="time", type="time")
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
      */
     private $time;
 
@@ -39,6 +52,11 @@ class Reservation
      * @var int
      *
      * @ORM\Column(name="number", type="integer")
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="integer")
      */
     private $number;
 
@@ -46,6 +64,11 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Email()
      */
     private $email;
 
@@ -53,6 +76,12 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
+	 * @Assert\Length(min="5", max="255")
      */
     private $name;
 
@@ -60,8 +89,30 @@ class Reservation
      * @var string
      *
      * @ORM\Column(name="phone", type="string", length=16)
+	 *
+	 * @Required()
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="string")
+	 * @Assert\Length(min="10", max="16")
      */
     private $phone;
+
+	/**
+	 * @var boolean
+	 *
+	 * @ORM\Column(name="state", type="boolean")
+	 * @Enum({
+	 *     StateEnum::STATE_WAITING,
+	 *     StateEnum::STATE_REFUSED,
+	 *     StateEnum::STATE_VALIDATED
+	 * })
+	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
+	 * @Assert\Type(type="bool")
+	 */
+    private $accepted;
 
 
     /**
@@ -217,4 +268,22 @@ class Reservation
     {
         return $this->phone;
     }
+
+	/**
+	 * @return bool
+	 */
+	public function isAccepted()
+	{
+		return $this->accepted;
+	}
+
+	/**
+	 * @param bool $accepted
+	 */
+	public function setAccepted($accepted)
+	{
+		$this->accepted = $accepted;
+	}
+
+
 }

@@ -2,6 +2,9 @@
 
 namespace DWBD\SecurityBundle\Form;
 
+use DWBD\SecurityBundle\Entity\RoleEnum;
+use DWBD\SecurityBundle\Entity\User;
+use DWBD\SecurityBundle\Form\DataTransformer\StringToArrayTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -24,10 +27,12 @@ class UserType extends AbstractType
 				'first_options'	  => array('label' => 'Password'),
 				'second_options'  => array('label' => 'Password (validation)'),
 			))
-			->add('role', ChoiceType::class, array(
-				'choices' => RoleEnum::getRolesForForm(),
-				'label'	  => 'Role'
-			));
+			->add($builder->create(
+				'role', ChoiceType::class, array(
+					'choices' => RoleEnum::getRolesForForm(),
+					'label'	  => 'Role',
+				))->addModelTransformer(new StringToArrayTransformer())
+			);
 	}
     
     /**
@@ -36,7 +41,7 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'DWBD\RistauranteBundle\Entity\User'
+            'data_class' => User::class
         ));
     }
 

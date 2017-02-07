@@ -4,6 +4,8 @@ namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Form\MenuType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +22,7 @@ class MenuController extends Controller
      *
      * @Route("/index", name="menus_index")
      * @Method("GET")
+	 * @Security("has_role('ROLE_WAITER')")
      */
     public function indexAction()
     {
@@ -37,12 +40,13 @@ class MenuController extends Controller
      *
      * @Route("/new", name="menus_new")
      * @Method({"GET", "POST"})
+	 * @Security("has_role('ROLE_EDITOR')")
      */
     public function newAction(Request $request)
     {
 		$options = array('isCreation' => true);
         $menu = new Menu();
-        $form = $this->createForm('DWBD\RistauranteBundle\Form\MenuType', $menu, $options);
+        $form = $this->createForm(MenuType::class, $menu, $options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -67,6 +71,7 @@ class MenuController extends Controller
      *
      * @Route("/show/{id}", name="menus_show")
      * @Method("GET")
+	 * @Security("has_role('ROLE_WAITER')")
      */
     public function showAction(Menu $menu)
     {
@@ -83,11 +88,12 @@ class MenuController extends Controller
      *
      * @Route("/edit/{id}", name="menus_edit")
      * @Method({"GET", "POST"})
+	 * @Security("has_role('ROLE_EDITOR')")
      */
     public function editAction(Request $request, Menu $menu)
     {
         $deleteForm = $this->createDeleteForm($menu);
-        $editForm = $this->createForm('DWBD\RistauranteBundle\Form\MenuType', $menu);
+        $editForm = $this->createForm(MenuType::class, $menu);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
@@ -108,6 +114,7 @@ class MenuController extends Controller
      *
      * @Route("/delete/{id}", name="menus_delete")
      * @Method("DELETE")
+	 * @Security("has_role('ROLE_CHIEF')")
      */
     public function deleteAction(Request $request, Menu $menu)
     {

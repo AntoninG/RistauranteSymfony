@@ -22,6 +22,7 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		// Get menus without dishes
+		$output->writeln("Search menus without dishes.");
 		$menuRep = $this
 			->getContainer()
 			->get("doctrine")
@@ -39,6 +40,8 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 		if (empty($menus)) {
 			$output->writeln('No menus without dishes. End of task.');
 			return;
+		} else {
+			$output->writeln(count($menus)." menus found");
 		}
 
 		// We need to retrieve the admin users
@@ -48,6 +51,7 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 			$chiefs	 = $userRep->findByRole("ROLE_CHIEF");
 
 			if (!empty($admins) || !empty($chiefs)) {
+				$output->writeln("Mails will be send to administrators and chiefs");
 				$recipients = array_merge($admins, $chiefs);
 				$chunk = array_chunk($recipients, 10);
 
