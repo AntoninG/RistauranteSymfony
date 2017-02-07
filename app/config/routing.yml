@@ -1,3 +1,7 @@
+dwbd_ristaurante_reservation:
+    resource: "@DWBDRistauranteBundle/Controller/ReservationController.php"
+    type:     annotation
+
 dwbd_ristaurante_dish:
     resource: "@DWBDRistauranteBundle/Controller/DishController.php"
     type:     annotation

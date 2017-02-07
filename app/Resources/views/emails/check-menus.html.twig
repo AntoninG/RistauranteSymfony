@@ -1,0 +1,20 @@
+<h3>Hi, there are some menus without any dishes to moderate.</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for menu in menus %}
+    <tr>
+        <td><a href="{{ url("menus_edit", {id: menu.id }) }}">{{ menu.title }}</a></td>
+        <td><a href="{{ url("menus_edit", {id: menu.id }) }}">{% if menu.author %}{{ menu.author.username }}{% else %}N/A{% endif %}</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p>Thanks!</p>

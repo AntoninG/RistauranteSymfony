@@ -44,11 +44,32 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 		// We need to retrieve the admin users
 		try  {
 			$userRep = $this->getContainer()->get("doctrine")->getManager()->getRepository("DWBDSecurityBundle:User");
-			$admins	 = $userRep->findByRole("ROLE_WAITER");
-			if (!empty($admins)) {
-				shuffle($admins);
-				$admin = array_shift($admins);
-				// TODO send mail
+			$admins	 = $userRep->findByRole("ROLE_ADMIN");
+			$chiefs	 = $userRep->findByRole("ROLE_CHIEF");
+
+			if (!empty($admins) || !empty($chiefs)) {
+				$recipients = array_merge($admins, $chiefs);
+				$chunk = array_chunk($recipients, 10);
+
+				foreach ($chunk as $array) {
+					$emails = array_map(function($user) {
+						return $user->getEmail();
+					}, $array);
+
+					$message = \Swift_Message::newInstance()
+						->setSubject("[INFO] - Ristaurante - Menus without dishes")
+						->setFrom($this->getContainer()->getParameter("mailer_user"))
+						->setBody(
+							$this->getContainer()->get("templating")->render(
+								'emails/check-menus.html.twig',
+								array('menus' => $menus)
+							),
+							'text/html'
+						)
+						->setTo($emails);
+
+					$this->getContainer()->get("mailer")->send($message);
+				}
 			} else {
 				$output->writeln('None administrators to contact, here are the menus concerned :');
 				foreach ($menus as $menu) {
