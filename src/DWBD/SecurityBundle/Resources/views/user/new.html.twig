@@ -15,11 +15,13 @@
     <div class="row">
         <div class="form-group col-sm-6">
             {{ form_label(form.username) }}
+            {{ form_errors(form.username) }}
             {{ form_widget(form.username) }}
         </div>
 
         <div class="form-group col-sm-6">
             {{ form_label(form.email) }}
+            {{ form_errors(form.email) }}
             {{ form_widget(form.email) }}
         </div>
     </div>
@@ -27,10 +29,12 @@
     <div class="row">
         <div class="form-group col-sm-6">
             {{ form_label(form.password.first) }}
+            {{ form_errors(form.password.first) }}
             {{ form_widget(form.password.first) }}
         </div>
         <div class="form-group col-sm-6">
             {{ form_label(form.password.second) }}
+            {{ form_errors(form.password.second) }}
             {{ form_widget(form.password.second) }}
         </div>
     </div>
@@ -38,6 +42,7 @@
     <div class="row">
         <div class="form-group col-sm-6">
             {{ form_label(form.role) }}
+            {{ form_errors(form.role) }}
             {{ form_widget(form.role) }}
         </div>
     </div>

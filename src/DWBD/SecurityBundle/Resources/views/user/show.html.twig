@@ -1,52 +1,51 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>User</h1>
+    <div class="row">
+        <div class="col-sm-4 inline-block">
+            <h1>User</h1>
+        </div>
+        <div class="col-sm-2 pull-right p-t-25 inline-block">
+            <a href="{{ path('user_index') }}" class="btn btn-link">Back to the list</a>
+        </div>
+    </div>
 
-    <table>
-        <tbody>
+    <div class="table-responsive">
+        <table class="table">
+            <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Username</th>
+                <th><b>Username</b></th>
                 <td>{{ user.username }}</td>
             </tr>
             <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
+                <th><b>Email</b></th>
                 <td>{{ user.email }}</td>
             </tr>
             <tr>
-                <th>Role</th>
-                <td>{{ user.role }}</td>
+                <th><b>Role</b></th>
+                <td>{{ user.role|join(', ') }}</td>
             </tr>
-            <tr>
-                <th>Salt</th>
-                <td>{{ user.salt }}</td>
-            </tr>
-            <tr>
-                <th>Isactive</th>
+            <tr class="{% if user.isActive %}success{% else %}danger{% endif %}">
+                <th><b>Active</b></th>
                 <td>{% if user.isActive %}Yes{% else %}No{% endif %}</td>
             </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('user_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('user_edit', { 'id': user.id }) }}">Edit</a>
-        </li>
-        <li>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+            <a href="{{ path('user_edit', { 'id': user.id }) }}" class="btn btn-primary" title="Edit the user">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+                Edit
+            </a>
+        </div>
+        <div class="col-sm-1">
             {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
+            <button type="submit" value="Delete" class="btn btn-danger" title="Delete the user">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+                Delete
+            </button>
             {{ form_end(delete_form) }}
-        </li>
-    </ul>
+        </div>
+    </div>
 {% endblock %}

@@ -21,28 +21,33 @@ class UserType extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$builder->add('username', TextType::class, array(
-			'attr' => array('class' => 'form-control', 'placeholder' => 'Login')
+			'attr' => array('class' => 'form-control', 'placeholder' => 'Login'),
+			'trim' => true
 		))
 		->add('email', TextType::class, array(
 			'attr' => array('class' => 'form-control', 'placeholder' => 'yourname@domaine.com'),
+			'trim' => true
 		))
 		->add('password', RepeatedType::class, array(
 			'type' => PasswordType::class,
 			'invalid_message' => 'The password fields must match.',
 			'first_options'	  => array(
 				'label' => 'Password',
-				'attr' => array('class' => 'form-control')
+				'attr' => array('class' => 'form-control'),
+				'trim' => true
 			),
 			'second_options'  => array(
 				'label' => 'Password (validation)',
-				'attr' => array('class' => 'form-control')
-			)
+				'attr' => array('class' => 'form-control'),
+				'trim' => true
+			),
 		))
 		->add($builder->create(
-				'role', ChoiceType::class, array(
-				'choices' => RoleEnum::getRolesForForm(),
-				'label'	  => 'Role',
-				'attr' => array('class' => 'form-control')
+			'role', ChoiceType::class, array(
+			'choices' => RoleEnum::getRolesForForm(),
+			'label'	  => 'Role',
+			'attr' => array('class' => 'form-control'),
+			'trim' => true
 			))->addModelTransformer(new StringToArrayUserTransformer())
 		);
 	}

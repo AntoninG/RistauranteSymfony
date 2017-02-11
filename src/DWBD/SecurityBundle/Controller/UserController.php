@@ -31,6 +31,7 @@ class UserController extends Controller
 
         return $this->render('DWBDSecurityBundle:user:index.html.twig', array(
             'users' => $users,
+			'title' => 'Users'
         ));
     }
 
@@ -46,18 +47,22 @@ class UserController extends Controller
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-//            $user->setRole()
-            $em->persist($user);
-            $em->flush($user);
+        if ($form->isSubmitted()) {
+        	if ($form->isValid()) {
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($user);
+				$em->flush($user);
 
-            return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+			} else {
+        		$this->addFlash('danger', 'There are errors in the form');
+			}
         }
 
         return $this->render('DWBDSecurityBundle:user:new.html.twig', array(
             'user' => $user,
             'form' => $form->createView(),
+			'title' => 'New user'
         ));
     }
 
@@ -74,6 +79,7 @@ class UserController extends Controller
         return $this->render('DWBDSecurityBundle:user:show.html.twig', array(
             'user' => $user,
             'delete_form' => $deleteForm->createView(),
+			'title' => 'User '.$user->getUsername()
         ));
     }
 
@@ -89,16 +95,21 @@ class UserController extends Controller
         $editForm = $this->createForm(UserType::class, $user);
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        if ($editForm->isSubmitted()){
+        	if ($editForm->isValid()) {
+				$this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('user_edit', array('id' => $user->getId()));
+				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+			} else {
+				$this->addFlash('danger', 'There are errors in the form');
+			}
         }
 
         return $this->render('DWBDSecurityBundle:user:edit.html.twig', array(
             'user' => $user,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+			'title' => 'Edit '.$user->getUsername()
         ));
     }
 

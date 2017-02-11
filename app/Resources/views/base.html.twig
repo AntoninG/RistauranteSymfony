@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Teaching project for LP DWBD">
     <meta name="author" content="Antonin GUILET">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}{% if title %}{{ title }}{% else %}Ristaurante{% endif %}{% endblock %}</title>
 
     {% block stylesheets %}
         <link href="{{ asset('css/reset.css') }}" rel="stylesheet">
@@ -23,7 +23,6 @@
 <!-- Navigation -->
 <nav id="navbar-main" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
                     data-target="#bs-example-navbar-collapse-1">
@@ -50,7 +49,8 @@
                     {% if app.user %}
                         {% if is_granted('ROLE_WAITER') %}
                             <li>
-                                <a href="{{ url('menus_index') }}"><i class="fa fa-cutlery" aria-hidden="true"></i> Menus</a>
+                                <a href="{{ url('menus_index') }}"><i class="fa fa-cutlery" aria-hidden="true"></i>
+                                    Menus</a>
                             </li>
                             <li>
                                 <a href="{{ url('dishes_index') }}"><i class="fa fa-coffee" aria-hidden="true"></i>
@@ -131,7 +131,7 @@
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script>
-		$( function() {
+		$(function () {
 			$('[title]').tooltip({
 				placement: 'bottom',
 				track: true,
