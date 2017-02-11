@@ -21,7 +21,8 @@ class CreateUserCommand extends ContainerAwareCommand
 		$this
 			->setName('security:create-user')
 			->setDescription('Create new user.')
-			->setHelp('This command allows you to create one user...')
+			->setHelp('This command allows you to create one user...'.PHP_EOL.
+				'Syntax : security:create-user username password email role')
 			->addArgument('username', InputArgument::REQUIRED, 'The username of the user.')
 			->addArgument('password', InputArgument::REQUIRED, 'The password of the user')
 			->addArgument('email', InputArgument::REQUIRED, 'The email of the user.')

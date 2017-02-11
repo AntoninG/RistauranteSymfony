@@ -5,6 +5,7 @@ namespace DWBD\RistauranteBundle\Controller;
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\RistauranteBundle\Form\MenuType;
+use DWBD\SecurityBundle\Entity\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -27,11 +28,17 @@ class MenuController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
-        $menus = $em->getRepository('DWBDRistauranteBundle:Menu')->findAll();
+		$user = $this->get("security.token_storage")->getToken()->getUser();
+		dump($user);
+		if ($user->getRole()[0] == RoleEnum::EDITOR) {
+			$menus = $em->getRepository('DWBDRistauranteBundle:Menu')->findByAuthor($user);
+		} else {
+			$menus = $em->getRepository('DWBDRistauranteBundle:Menu')->findAll();
+		}
 
         return $this->render('DWBDRistauranteBundle:menu:index.html.twig', array(
             'menus' => $menus,
+			'title' => 'Menus'
         ));
     }
 
@@ -63,6 +70,7 @@ class MenuController extends Controller
         return $this->render('DWBDRistauranteBundle:menu:new.html.twig', array(
             'menu' => $menu,
             'form' => $form->createView(),
+			'title' => 'New menu'
         ));
     }
 
@@ -80,6 +88,7 @@ class MenuController extends Controller
         return $this->render('DWBDRistauranteBundle:menu:show.html.twig', array(
             'menu' => $menu,
             'delete_form' => $deleteForm->createView(),
+			'title' => $menu->getTitle()
         ));
     }
 
@@ -106,6 +115,7 @@ class MenuController extends Controller
             'menu' => $menu,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+			'title' => 'Edit '.$menu->getTitle()
         ));
     }
 

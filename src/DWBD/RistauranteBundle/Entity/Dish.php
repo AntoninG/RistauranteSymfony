@@ -144,6 +144,13 @@ class Dish
 	 */
     private $menus;
 
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->menus = new ArrayCollection();
+	}
 
     /**
      * Get id
@@ -333,10 +340,14 @@ class Dish
 
 	/**
 	 * @param User $author
+	 *
+	 * @return Dish
 	 */
 	public function setAuthor($author)
 	{
 		$this->author = $author;
+
+		return $this;
 	}
 
 	/**
@@ -349,19 +360,15 @@ class Dish
 
 	/**
 	 * @param ArrayCollection $menus
+	 *
+	 * @return Dish
 	 */
 	public function setMenus($menus)
 	{
 		$this->menus = $menus;
-	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->menus = new ArrayCollection();
-    }
+		return $this;
+	}
 
     /**
      * Get homemade

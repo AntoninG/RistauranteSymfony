@@ -75,7 +75,12 @@ class User implements UserInterface, \Serializable
 	/**
 	 * @var array
 	 *
-	 * @ORM\Column(name="role", type="json_array", length=40)
+	 * @ORM\Column(
+	 *     name="role",
+	 *     type="json_array",
+	 *     length=40,
+	 *     columnDefinition="ENUM(RoleEnum::USER, RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN)"
+	 * )
 	 *
 	 * @Required()
 	 * @Assert\NotNull()

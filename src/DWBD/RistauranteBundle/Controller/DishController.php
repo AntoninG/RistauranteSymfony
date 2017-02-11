@@ -5,6 +5,7 @@ namespace DWBD\RistauranteBundle\Controller;
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\RistauranteBundle\Form\DishType;
+use DWBD\SecurityBundle\Entity\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -27,11 +28,17 @@ class DishController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+		$user = $this->get("security.token_storage")->getToken()->getUser();
 
-        $dishes = $em->getRepository('DWBDRistauranteBundle:Dish')->findAll();
+        if ($user->getRole()[0] == RoleEnum::EDITOR) {
+			$dishes = $em->getRepository('DWBDRistauranteBundle:Dish')->findByAuthor($user);
+		} else {
+			$dishes = $em->getRepository('DWBDRistauranteBundle:Dish')->findAll();
+		}
 
         return $this->render('DWBDRistauranteBundle:dish:index.html.twig', array(
             'dishes' => $dishes,
+			'title' => 'Dishes'
         ));
     }
 
@@ -48,11 +55,17 @@ class DishController extends Controller
         $form = $this->createForm(DishType::class, $dish);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $dish->setState(StateEnum::STATE_DRAFT);
-            $em->persist($dish);
-            $em->flush($dish);
+        if ($form->isSubmitted()) {
+        	if ($form->isValid()) {
+				$em = $this->getDoctrine()->getManager();
+				$user = $this->get("security.token_storage")->getToken()->getUser();
+				$dish->setAuthor($user)
+					 ->setState(StateEnum::STATE_DRAFT);
+				$em->persist($dish);
+				$em->flush($dish);
+			} else {
+				$this->addFlash('danger', 'There are errors in the form');
+			}
 
             return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
         }
@@ -60,6 +73,7 @@ class DishController extends Controller
         return $this->render('DWBDRistauranteBundle:dish:new.html.twig', array(
             'dish' => $dish,
             'form' => $form->createView(),
+			'title' => 'New dish'
         ));
     }
 
@@ -77,6 +91,7 @@ class DishController extends Controller
         return $this->render('DWBDRistauranteBundle:dish:show.html.twig', array(
             'dish' => $dish,
             'delete_form' => $deleteForm->createView(),
+			'title' => $dish->getTitle()
         ));
     }
 
@@ -93,16 +108,21 @@ class DishController extends Controller
         $editForm = $this->createForm(DishType::class, $dish);
         $editForm->handleRequest($request);
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        if ($editForm->isSubmitted()) {
+			if ($editForm->isValid()) {
+				$this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('dishes_edit', array('id' => $dish->getId()));
+				return $this->redirectToRoute('dishes_edit', array('id' => $dish->getId()));
+			} else {
+				$this->addFlash('danger', 'There are errors in the form');
+			}
         }
 
         return $this->render('DWBDRistauranteBundle:dish:edit.html.twig', array(
             'dish' => $dish,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+			'title' => 'Edit '.$dish->getTitle()
         ));
     }
 
