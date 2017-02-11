@@ -5,7 +5,7 @@ namespace DWBD\SecurityBundle\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
-class StringToArrayTransformer implements DataTransformerInterface
+class StringToArrayUserTransformer implements DataTransformerInterface
 {
 	/**
 	 * Transforms an array to a string.

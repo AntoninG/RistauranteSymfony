@@ -4,11 +4,12 @@ namespace DWBD\SecurityBundle\Form;
 
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;
-use DWBD\SecurityBundle\Form\DataTransformer\StringToArrayTransformer;
+use DWBD\SecurityBundle\Form\DataTransformer\StringToArrayUserTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,22 +20,33 @@ class UserType extends AbstractType
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$builder->add('username')
-			->add('email')
-			->add('password', RepeatedType::class, array(
-				'type' => PasswordType::class,
-				'invalid_message' => 'The password fields must match.',
-				'first_options'	  => array('label' => 'Password'),
-				'second_options'  => array('label' => 'Password (validation)'),
-			))
-			->add($builder->create(
+		$builder->add('username', TextType::class, array(
+			'attr' => array('class' => 'form-control', 'placeholder' => 'Login')
+		))
+		->add('email', TextType::class, array(
+			'attr' => array('class' => 'form-control', 'placeholder' => 'yourname@domaine.com'),
+		))
+		->add('password', RepeatedType::class, array(
+			'type' => PasswordType::class,
+			'invalid_message' => 'The password fields must match.',
+			'first_options'	  => array(
+				'label' => 'Password',
+				'attr' => array('class' => 'form-control')
+			),
+			'second_options'  => array(
+				'label' => 'Password (validation)',
+				'attr' => array('class' => 'form-control')
+			)
+		))
+		->add($builder->create(
 				'role', ChoiceType::class, array(
-					'choices' => RoleEnum::getRolesForForm(),
-					'label'	  => 'Role',
-				))->addModelTransformer(new StringToArrayTransformer())
-			);
+				'choices' => RoleEnum::getRolesForForm(),
+				'label'	  => 'Role',
+				'attr' => array('class' => 'form-control')
+			))->addModelTransformer(new StringToArrayUserTransformer())
+		);
 	}
-    
+
     /**
      * {@inheritdoc}
      */

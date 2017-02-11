@@ -73,22 +73,13 @@ class User implements UserInterface, \Serializable
     private $email;
 
 	/**
-	 * @var string
+	 * @var array
 	 *
-	 * @ORM\Column(name="role", type="string", length=40)
-	 * @Enum({
-	 *		RoleEnum::USER,
-	 *		RoleEnum::WAITER,
-	 *		RoleEnum::EDITOR,
-	 *		RoleEnum::REVIEWER,
-	 *		RoleEnum::CHIEF,
-	 *		RoleEnum::ADMIN
-	 * })
+	 * @ORM\Column(name="role", type="json_array", length=40)
 	 *
 	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
-	 * @Assert\Type(type="string")
 	 */
     private $role;
 
@@ -122,7 +113,6 @@ class User implements UserInterface, \Serializable
 
     public function __construct()
 	{
-
 		$this->isActive = true;
 		$this->salt = md5(uniqid(null, true));
 	}
@@ -306,20 +296,19 @@ class User implements UserInterface, \Serializable
 	}
 
 	/**
-	 * Get the user's roles
+	 * Get the user's role
 	 *
-	 * @return string
+	 * @return array
 	 */
 	public function getRole()
 	{
-		return [$this->role];
+		return $this->role;
 	}
-
 
 	/**
 	 * Set the user's role
 	 *
-	 * @param string $role
+	 * @param array $role
 	 */
 	public function setRole($role)
 	{

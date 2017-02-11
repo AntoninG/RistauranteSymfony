@@ -48,6 +48,7 @@ class UserController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+//            $user->setRole()
             $em->persist($user);
             $em->flush($user);
 
