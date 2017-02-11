@@ -49,6 +49,9 @@ class UserController extends Controller
 
         if ($form->isSubmitted()) {
         	if ($form->isValid()) {
+				$encoder = $this->get('security.password_encoder');
+				$encoded = $encoder->encodePassword($user, $user->getPassword());
+				$user->setPassword($encoded);
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($user);
 				$em->flush($user);
@@ -79,7 +82,7 @@ class UserController extends Controller
         return $this->render('DWBDSecurityBundle:user:show.html.twig', array(
             'user' => $user,
             'delete_form' => $deleteForm->createView(),
-			'title' => 'User '.$user->getUsername()
+			'title' => $user->getUsername()
         ));
     }
 
@@ -97,6 +100,9 @@ class UserController extends Controller
 
         if ($editForm->isSubmitted()){
         	if ($editForm->isValid()) {
+				$encoder = $this->get('security.password_encoder');
+				$encoded = $encoder->encodePassword($user, $user->getPassword());
+				$user->setPassword($encoded);
 				$this->getDoctrine()->getManager()->flush();
 
 				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
@@ -117,7 +123,7 @@ class UserController extends Controller
      * Deletes a user entity.
      *
      * @Route("/delete/{id}", name="user_delete")
-     * @Method("DELETE")
+     * @Method({"DELETE", "GET"})
      */
     public function deleteAction(Request $request, User $user)
     {

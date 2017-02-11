@@ -37,6 +37,7 @@ class SecurityController extends Controller
 		return $this->render('DWBDSecurityBundle:security:login.html.twig', array(
 			'last_username' => $lastUsername,
 			'error'         => $error,
+			'title' 		=> 'Login'
 		));
 	}
 
