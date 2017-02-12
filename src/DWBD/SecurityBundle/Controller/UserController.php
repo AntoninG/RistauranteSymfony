@@ -28,7 +28,7 @@ class UserController extends Controller
 	public function indexAction(Request $request)
 	{
 		$page = $request->get('page', 1);
-		$limit = $request->get('limit', 15);
+		$limit = $request->get('limit', 3);
 
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDSecurityBundle:User');
 		$totalRows = $repository->totalRowCount();
@@ -38,17 +38,13 @@ class UserController extends Controller
 		$last = ceil($totalRows / $limit);
 		$last = $last == 0 ? 1 : $last;
 		$lastMinusOne = $last - 1;
-		dump('$totalRows '.$totalRows);
-		dump('$limit '.$limit);
-		dump('$last '.$last);
-		dump('Page '.$page);
 
 		$users = $repository->findBy(array(), null, $limit, $start);
 
 		return $this->render('DWBDSecurityBundle:user:index.html.twig', array(
 			'users' => $users,
 			'title' => 'Users',
-			'number' => '('.($start + 1).' to '.($start + count($users)).' / '.$totalRows.')',
+			'number' => ($start + 1) . ' to ' . ($start + count($users)) . ' / ' . $totalRows . ' entries',
 			'page' => $page,
 			'last' => $last,
 			'lastMinusOne' => $lastMinusOne

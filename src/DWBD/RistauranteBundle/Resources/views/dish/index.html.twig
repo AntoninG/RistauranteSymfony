@@ -1,51 +1,85 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>Dishes list</h1>
+    <div class="row">
+        <div class="col-sm-6 inline-block">
+            <h1>Dishes</h1>
+        </div>
+        <div class="col-sm-1 pull-right p-t-25 inline-block">
+            <a href="{{ url('dishes_new') }}" title="New dish" class="btn btn-success">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                Add
+            </a>
+        </div>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>State</th>
-                <th>Homemade</th>
-                <th>Image</th>
-                <th>Category</th>
-                <th>Allergens</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for dish in dishes %}
-            <tr>
-                <td><a href="{{ path('dishes_show', { 'id': dish.id }) }}">{{ dish.title }}</a></td>
-                <td>{{ dish.description }}</td>
-                <td>{{ dish.price }}</td>
-                <td>{{ dish.state }}</td>
-                <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
-                <td>{{ dish.image }}</td>
-                <td>{{ dish.category }}</td>
-                <td>{% if dish.allergens %}{{ dish.allergens|join(', ') }}{% endif %}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('dishes_show', { 'id': dish.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('dishes_edit', { 'id': dish.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('dishes_new') }}">Create a new dish</a>
-        </li>
-    </ul>
+    {% if dishes is not empty %}
+        {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Price €</th>
+                    <th>State</th>
+                    <th>Homemade</th>
+                    <th>Category</th>
+                    <th>Allergens</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dish in dishes %}
+                    <tr>
+                        <td><a href="{{ path('dishes_show', { 'id': dish.id }) }}">{{ dish.title }}</a></td>
+                        <td>{{ dish.price }}</td>
+                        <td>{{ states[dish.state] }}</td>
+                        <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
+                        <td>{% if dish.category %}{{ categories[dish.category] }}{% else %}N/A{% endif %}</td>
+                        <td class="{% if dish.allergens is not empty %}warning{% else %}success{% endif %}">
+                            {% if dish.allergens is not empty %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if dish.image is not null and dish.image is not empty %}
+                                <img src="{{ asset('img/dishes/' ~ dish.image) }}" class="img-responsive img-thumbnail">
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('dishes_show', { 'id': dish.id }) }}" title="Show dish"
+                               class="btn btn-info btn-sm">
+                                <i class="fa fa-search-plus" aria-hidden="true"></i>
+                                Show
+                            </a>
+                            {% if is_granted('ROLE_EDITOR') %}
+                                <a href="{{ path('dishes_edit', { 'id': dish.id }) }}" title="Edit dish"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    Edit
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+        <div class="well well-lg text-center"><p>No dishes available.</p></div>
+    {% endif %}
+
+
+    {% if dishes is not empty %}
+        <p class="text-right">{{ number }}</p>
+        {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
+    {% endif %}
+
 {% endblock %}

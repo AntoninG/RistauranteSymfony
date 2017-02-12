@@ -17,9 +17,9 @@ abstract class CategoryEnum
 	public static function getCategoriesForForm()
 	{
 		return array(
-			'Entree' 	=> self::ENTREE,
+			'Entree' => self::ENTREE,
 			'Main dish' => self::DISH,
-			'Dessert' 	=> self::DESSERT,
+			'Dessert' => self::DESSERT,
 			'Cheese plate' => self::CHEESE_PLATE,
 			'Appetizer' => self::APPETIZER
 		);
@@ -36,6 +36,17 @@ abstract class CategoryEnum
 			self::DESSERT,
 			self::CHEESE_PLATE,
 			self::APPETIZER
+		);
+	}
+
+	public static function getCategoriesTranslation()
+	{
+		return array(
+			self::ENTREE => 'Entree',
+			self::DISH => 'Main dish',
+			self::DESSERT => 'Dessert',
+			self::CHEESE_PLATE => 'Cheese plate',
+			self::APPETIZER => 'Appetizer'
 		);
 	}
 }

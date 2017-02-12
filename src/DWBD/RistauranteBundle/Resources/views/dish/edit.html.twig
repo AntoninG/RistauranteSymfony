@@ -1,21 +1,131 @@
 {% extends 'base.html.twig' %}
 
+{% block head %}
+    {{ parent() }}
+    <style type="text/css">
+        .btn span.glyphicon {
+            opacity: 0;
+        }
+
+        .btn.active span.glyphicon {
+            opacity: 1;
+        }
+
+        #{{ edit_form.homemade.vars.id }} {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-    <h1>Dish edit</h1>
+    <div class="row">
+        <div class="col-sm-4 inline-block">
+            <h1>Dish edit</h1>
+        </div>
+        <div class="col-sm-2 pull-right p-t-25 inline-block">
+            <a href="{{ path('dishes_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span> Back to the list</a>
+        </div>
+    </div>
 
     {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
+    {{ form_start(edit_form) }}
+
+    <div class="row">
+        <div class="form-group col-sm-6">
+            {{ form_label(edit_form.title) }}
+            {{ form_errors(edit_form.title) }}
+            {{ form_widget(edit_form.title) }}
+        </div>
+
+        <div class="form-group col-sm-3">
+            {{ form_label(edit_form.price) }}
+            {{ form_errors(edit_form.price) }}
+            {{ form_widget(edit_form.price) }}
+        </div>
+
+        {% if refusedOrValidated != true %}
+            <div class="form-group col-sm-3">
+                {{ form_label(edit_form.state) }}
+                {{ form_errors(edit_form.state) }}
+                {{ form_widget(edit_form.state) }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-6">
+            {{ form_label(edit_form.description) }}
+            {{ form_errors(edit_form.description) }}
+            {{ form_widget(edit_form.description) }}
+        </div>
+
+        <div class="form-group col-sm-6">
+            {{ form_label(edit_form.allergens) }}
+            {{ form_errors(edit_form.allergens) }}
+            {{ form_widget(edit_form.allergens) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-4">
+            {{ form_label(edit_form.category) }}
+            {{ form_errors(edit_form.category) }}
+            {{ form_widget(edit_form.category) }}
+        </div>
+
+        <div class="form-group col-sm-4">
+            {{ form_label(edit_form.homemade) }}
+            {{ form_errors(edit_form.homemade) }}
+            <div class="text-center">
+                <label class="btn btn-info">
+                    {{ form_widget(edit_form.homemade) }}
+                    <span class="glyphicon glyphicon-ok"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group col-sm-4">
+            {{ form_label(edit_form.image) }}
+            {{ form_errors(edit_form.image) }}
+            {{ form_widget(edit_form.image) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-sm-6">
+            <button type="submit" value="Edit" class="btn btn-primary" title="Edit dish">
+                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                Edit
+            </button>
+        </div>
+    </div>
     {{ form_end(edit_form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('dishes_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    {{ form_start(delete_form) }}
+    <div class="form-group">
+        <button type="submit" value="Delete" class="btn btn-danger" title="Delete dish">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+            Delete
+        </button>
+    </div>
+    {{ form_end(delete_form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+		var homemade = $("#{{ edit_form.homemade.vars.id }}");
+
+		checkHomemade();
+
+		homemade.on('change', checkHomemade);
+
+		function checkHomemade() {
+			if (homemade.is(':checked')) {
+				homemade.parent('label').addClass('active');
+			} else {
+				homemade.parent('label').removeClass('active');
+			}
+		}
+    </script>
 {% endblock %}

@@ -66,3 +66,6 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     "%mailer_spool%"
+
+parameters:
+    dishes_directory: '%kernel.root_dir%/../web/img/dishes'

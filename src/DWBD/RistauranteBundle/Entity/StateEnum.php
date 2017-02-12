@@ -16,10 +16,10 @@ abstract class StateEnum
 	public static function getStatesForForm()
 	{
 		return array(
-			self::STATE_DRAFT 	=> 'Draft',
-			self::STATE_WAITING => 'Waiting for validation',
-			self::STATE_REFUSED => 'Refused',
-			self::STATE_VALIDATED => 'Validated'
+			'Draft'		=> self::STATE_DRAFT,
+			'Waiting for validation' => self::STATE_WAITING,
+			'Refused' 	=> self::STATE_REFUSED,
+			'Validated' => self::STATE_VALIDATED
 		);
 	}
 
@@ -33,6 +33,16 @@ abstract class StateEnum
 			self::STATE_WAITING,
 			self::STATE_REFUSED,
 			self::STATE_VALIDATED
+		);
+	}
+
+	public static function getStatesTranslation()
+	{
+		return array(
+			self::STATE_DRAFT => 'Draft',
+			self::STATE_WAITING => 'Waiting for validation',
+			self::STATE_REFUSED => 'Refused',
+			self::STATE_VALIDATED => 'Validated'
 		);
 	}
 }

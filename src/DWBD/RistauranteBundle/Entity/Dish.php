@@ -59,6 +59,7 @@ class Dish
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="float")
+	 * @Assert\GreaterThan(value="0.0")
      */
     private $price;
 
@@ -94,7 +95,6 @@ class Dish
 	 *
 	 * @ORM\Column(name="image", type="text", nullable=true)
 	 *
-	 * @Assert\NotBlank()
 	 * @Assert\Image(
 	 *     mimeTypes={"image/bmp", "image/png", "image/gif", "image/jpg", "image/jpeg"},
 	 *     mimeTypesMessage="Only bmp, gif, png and jpg allowed",
@@ -107,7 +107,7 @@ class Dish
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="category", type="integer")
+	 * @ORM\Column(name="category", type="integer", nullable=true)
 	 * @Enum({
 	 *		CategoryEnum::ENTREE,
 	 *     	CategoryEnum::DISH,
@@ -116,8 +116,6 @@ class Dish
 	 *     	CategoryEnum::APPETIZER
 	 * })
 	 *
-	 * @Assert\NotNull()
-	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
 	 */
     private $category;
@@ -125,9 +123,18 @@ class Dish
 	/**
 	 * @var array
 	 *
-	 * @ORM\Column(name="allergens", type="array")
+	 * @ORM\Column(name="allergens", type="json_array", nullable=true)
+	 *
+	 * @Assert\Type(type="array")
 	 */
     private $allergens;
+
+	/**
+	 * @var boolean
+	 *
+	 * @ORM\Column(name="has_been_refused_or_validated", type="boolean")
+	 */
+    private $hasBeenRefusedOrValidated;
 
 	/**
 	 * @var User
@@ -150,6 +157,7 @@ class Dish
 	public function __construct()
 	{
 		$this->menus = new ArrayCollection();
+		$this->hasBeenRefusedOrValidated = false;
 	}
 
     /**
@@ -403,4 +411,28 @@ class Dish
     {
         $this->menus->removeElement($menu);
     }
+
+	/**
+	 * @return bool
+	 */
+	public function hasBeenRefusedOrValidated()
+	{
+		return $this->hasBeenRefusedOrValidated;
+	}
+
+	/**
+	 * Check if the dish has been refused or validated
+	 * If true, put the flag hasBeenRefusedOrValidated to true
+	 *
+	 * @return Dish
+	 */
+	public function checkHasBeenRefusedOrValidated()
+	{
+		if (in_array($this->state, array(StateEnum::STATE_REFUSED, StateEnum::STATE_VALIDATED)) && !$this->hasBeenRefusedOrValidated) {
+			$this->hasBeenRefusedOrValidated = true;
+		}
+
+		return $this;
+	}
+
 }
