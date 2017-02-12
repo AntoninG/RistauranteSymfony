@@ -21,54 +21,60 @@ class UserType extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		$builder->add('username', TextType::class, array(
-			'attr' => array('class' => 'form-control', 'placeholder' => 'Login'),
-			'trim' => true
-		))
-		->add('email', TextType::class, array(
-			'attr' => array('class' => 'form-control', 'placeholder' => 'yourname@domaine.com'),
-			'trim' => true
-		))
-		->add('password', RepeatedType::class, array(
-			'type' => PasswordType::class,
-			'invalid_message' => 'The password fields must match.',
-			'first_options'	  => array(
-				'label' => 'Password',
-				'attr' => array('class' => 'form-control'),
+				'attr' => array(
+					'class' => 'form-control',
+					'placeholder' => 'Login'
+				),
 				'trim' => true
-			),
-			'second_options'  => array(
-				'label' => 'Password (validation)',
-				'attr' => array('class' => 'form-control'),
-				'trim' => true
-			),
-		))
-		->add($builder->create(
-			'role', ChoiceType::class, array(
-			'choices' => RoleEnum::getRolesForForm(),
-			'label'	  => 'Role',
-			'attr' => array('class' => 'form-control'),
-			'trim' => true
-			))->addModelTransformer(new StringToArrayUserTransformer())
-		);
+			)
+		)
+			->add('email', TextType::class, array(
+					'attr' => array('class' => 'form-control', 'placeholder' => 'yourname@domaine.com'),
+					'trim' => true
+				)
+			)
+			->add('password', RepeatedType::class, array(
+					'type' => PasswordType::class,
+					'invalid_message' => 'The password fields must match.',
+					'first_options' => array(
+						'label' => 'Password',
+						'attr' => array('class' => 'form-control'),
+						'trim' => true
+					),
+					'second_options' => array(
+						'label' => 'Password (validation)',
+						'attr' => array('class' => 'form-control'),
+						'trim' => true
+					),
+				)
+			)
+			->add($builder->create(
+				'role', ChoiceType::class, array(
+					'choices' => RoleEnum::getRolesForForm(),
+					'label' => 'Role',
+					'attr' => array('class' => 'form-control'),
+					'trim' => true
+				)
+			)->addModelTransformer(new StringToArrayUserTransformer()));
 	}
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => User::class
-        ));
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function configureOptions(OptionsResolver $resolver)
+	{
+		$resolver->setDefaults(array(
+			'data_class' => User::class
+		));
+	}
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'dwbd_securitybundle_user';
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getBlockPrefix()
+	{
+		return 'dwbd_securitybundle_user';
+	}
 
 
 }

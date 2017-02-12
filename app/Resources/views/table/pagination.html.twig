@@ -1,0 +1,92 @@
+<div class="row">
+    {% if last > 1 %}
+        <div class="col-xs-12 text-center">
+            <nav aria-label="Pages">
+                <ul class="pagination">
+
+                    {# first #}
+                    <li {% if page <= 1 %}class="disabled"{% endif %}>
+                        {% if page > 1 %}
+                            <a href="{{ path(route) }}?page=1" aria-label="First" title="First">
+                                <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                            </a>
+                        {% else %}
+                            <span aria-label="First" title="First">
+                            <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                        </span>
+                        {% endif %}
+                    </li>
+
+                    {# not enough pages to bother breaking it up #}
+                    {% if last <= 7 %}
+
+                        {% for i in 1..last %}
+                            <li {% if i == page %}class="active"{% endif %}>
+                                {% if i == page %}
+                                    <span>{{ i }} <span class="sr-only">(current)</span></span>
+                                {% else %}
+                                    <a href="{{ path(route) }}?page={{ i }}">{{ i }}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+
+                    {% elseif last > 7 %} {# enough pages to hide some #}
+
+                        {% if page < 4 %} {# close to beginning; only hide later pages #}
+                            {% for i in 1..4 %}
+                                <li {% if i == page %} class="active"{% endif %}>
+                                    {% if i == page %}
+                                        <span>{{ i }} <span class="sr-only">(current)</span></span>
+                                    {% else %}
+                                        <a href="{{ path(route) }}?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                            <li><a href="{{ path(route) }}?page=5" title="5">...</a></li>
+
+                        {% elseif last - 3 > page and page > 3 %} {# in middle; hide some front and some back #}
+                            <li><a href="{{ path(route) }}?page={{ page - 4 }}" title="{{ page - 4 }}">...</a></li>
+                            {% for i in (page - 3)..(page + 3) %}
+                                <li {% if i == page %} class="active"{% endif %}>
+                                    {% if i == page %}
+                                        <span>{{ i }} <span class="sr-only">(current)</span></span>
+                                    {% else %}
+                                        <a href="{{ path(route) }}?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                            <li><a href="{{ path(route) }}?page={{ page + 4 }}" title="{{ page + 4 }}">...</a></li>
+
+                        {% else %} {# close to end; only hide early pages #}
+                            <li><a href="{{ path(route) }}?page={{ last - 4 }}" title="{{ last - 4 }}">...</a></li>
+                            {% for i in (last - 3)..last %}
+                                <li {% if i == page %} class="active"{% endif %}>
+                                    {% if i == page %}
+                                        <span>{{ i }} <span class="sr-only">(current)</span></span>
+                                    {% else %}
+                                        <a href="{{ path(route) }}?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+
+                    {% endif %}
+
+                    {# first #}
+                    <li {% if page == last %}class="disabled"{% endif %}>
+                        {% if page != last %}
+                            <a href="{{ path(route) }}?page={{ last }}" aria-label="Last" title="Last">
+                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                            </a>
+                        {% else %}
+                            <span aria-label="Last" title="Last">
+                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                            </span>
+                        {% endif %}
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
+</div>

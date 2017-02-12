@@ -22,4 +22,9 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
 			->getQuery()
 			->getOneOrNullResult();
 	}
+
+	public function totalRowCount()
+	{
+		return count($this->createQueryBuilder('u')->getQuery()->getScalarResult());
+	}
 }
