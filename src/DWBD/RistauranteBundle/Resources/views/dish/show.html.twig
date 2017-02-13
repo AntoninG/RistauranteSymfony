@@ -1,60 +1,68 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>Dish</h1>
+    <div class="row">
+        <div class="col-sm-4 inline-block">
+            <h1>Dish</h1>
+        </div>
+        <div class="col-sm-2 pull-right p-t-25 inline-block">
+            <a href="{{ path('dishes_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span>
+                Back to the list
+            </a>
+        </div>
+    </div>
 
     <table>
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ dish.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ dish.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ dish.description }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ dish.price }}</td>
-            </tr>
-            <tr>
-                <th>State</th>
-                <td>{{ dish.state }}</td>
-            </tr>
-            <tr>
-                <th>Homemade</th>
-                <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>{{ dish.image }}</td>
-            </tr>
-            <tr>
-                <th>Category</th>
-                <td>{{ dish.category }}</td>
-            </tr>
-            <tr>
-                <th>Allergens</th>
-                <td>{% if dish.allergens %}{{ dish.allergens|join(', ') }}{% endif %}</td>
-            </tr>
+        <tr>
+            <th>Title</th>
+            <td>{{ dish.title }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ dish.description }}</td>
+        </tr>
+        <tr>
+            <th>Price</th>
+            <td>{{ dish.price }}</td>
+        </tr>
+        <tr>
+            <th>State</th>
+            <td>{{ dish.state }}</td>
+        </tr>
+        <tr>
+            <th>Homemade</th>
+            <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Image</th>
+            <td>{{ dish.image }}</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td>{{ dish.category }}</td>
+        </tr>
+        <tr>
+            <th>Allergens</th>
+            <td>{% if dish.allergens %}{{ dish.allergens|join(', ') }}{% endif %}</td>
+        </tr>
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('dishes_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('dishes_edit', { 'id': dish.id }) }}">Edit</a>
-        </li>
-        <li>
+    <div class="row">
+        <div class="col-sm-1">
+            <a href="{{ path('dishes_edit', { 'id': dish.id }) }}" class="btn btn-primary" title="Edit dish">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+                Edit
+            </a>
+        </div>
+        <div class="col-sm-1">
             {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
+            <button type="submit" value="Delete" class="btn btn-danger" title="Delete dish">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+                Delete
+            </button>
             {{ form_end(delete_form) }}
-        </li>
-    </ul>
+        </div>
+    </div>
 {% endblock %}

@@ -28,7 +28,7 @@ class UserController extends Controller
 	public function indexAction(Request $request)
 	{
 		$page = $request->get('page', 1);
-		$limit = $request->get('limit', 3);
+		$limit = $request->get('limit', 15);
 
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDSecurityBundle:User');
 		$totalRows = $repository->totalRowCount();
@@ -47,7 +47,8 @@ class UserController extends Controller
 			'number' => ($start + 1) . ' to ' . ($start + count($users)) . ' / ' . $totalRows . ' entries',
 			'page' => $page,
 			'last' => $last,
-			'lastMinusOne' => $lastMinusOne
+			'lastMinusOne' => $lastMinusOne,
+			'active_link' => 'users'
 		));
 	}
 
@@ -86,7 +87,8 @@ class UserController extends Controller
 		return $this->render('DWBDSecurityBundle:user:new.html.twig', array(
 			'user' => $user,
 			'form' => $form->createView(),
-			'title' => 'New user'
+			'title' => 'New user',
+			'active_link' => 'users'
 		));
 	}
 
@@ -103,7 +105,8 @@ class UserController extends Controller
 		return $this->render('DWBDSecurityBundle:user:show.html.twig', array(
 			'user' => $user,
 			'delete_form' => $deleteForm->createView(),
-			'title' => $user->getUsername()
+			'title' => $user->getUsername(),
+			'active_link' => 'users'
 		));
 	}
 
@@ -140,7 +143,8 @@ class UserController extends Controller
 			'user' => $user,
 			'edit_form' => $editForm->createView(),
 			'delete_form' => $deleteForm->createView(),
-			'title' => 'Edit ' . $user->getUsername()
+			'title' => 'Edit ' . $user->getUsername(),
+			'active_link' => 'users'
 		));
 	}
 

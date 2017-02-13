@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 /**
  * Dish controller.
  *
@@ -62,7 +63,8 @@ class DishController extends Controller
 			'number' => ($start + 1) . ' to ' . ($start + count($dishes)) . ' / ' . $totalRows . ' entries',
 			'page' => $page,
 			'last' => $last,
-			'lastMinusOne' => $lastMinusOne
+			'lastMinusOne' => $lastMinusOne,
+			'active_link' => 'dishes'
 		));
 	}
 
@@ -87,7 +89,7 @@ class DishController extends Controller
 			if ($form->isValid()) {
 				// Move the image before anything
 				$image = $dish->getImage();
-				$fileName = md5(uniqid()).'.'.$image->guessExtension();
+				$fileName = md5(uniqid()) . '.' . $image->guessExtension();
 				$image->move(
 					$this->getParameter('dishes_directory'),
 					$fileName
@@ -110,7 +112,8 @@ class DishController extends Controller
 		return $this->render('DWBDRistauranteBundle:dish:new.html.twig', array(
 			'dish' => $dish,
 			'form' => $form->createView(),
-			'title' => 'New dish'
+			'title' => 'New dish',
+			'active_link' => 'dishes'
 		));
 	}
 
@@ -128,7 +131,8 @@ class DishController extends Controller
 		return $this->render('DWBDRistauranteBundle:dish:show.html.twig', array(
 			'dish' => $dish,
 			'delete_form' => $deleteForm->createView(),
-			'title' => $dish->getTitle()
+			'title' => $dish->getTitle(),
+			'active_link' => 'dishes'
 		));
 	}
 
@@ -150,7 +154,7 @@ class DishController extends Controller
 
 		if (!is_null($dish->getImage()) && !empty($dish->getImage())) {
 			$dish->setImage(
-				new File($this->getParameter('dishes_directory').'/'.$dish->getImage())
+				new File($this->getParameter('dishes_directory') . '/' . $dish->getImage())
 			);
 		}
 
@@ -174,7 +178,8 @@ class DishController extends Controller
 			'edit_form' => $editForm->createView(),
 			'delete_form' => $deleteForm->createView(),
 			'title' => 'Edit ' . $dish->getTitle(),
-			'refusedOrValidated' => $options['refusedOrValidated']
+			'refusedOrValidated' => $options['refusedOrValidated'],
+			'active_link' => 'dishes'
 		));
 	}
 

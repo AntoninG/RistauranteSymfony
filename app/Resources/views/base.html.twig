@@ -33,14 +33,16 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url('home') }}" title="Home"><i class="fa fa-home" aria-hidden="true"></i></a>
+            <a class="navbar-brand{% if active_link == 'home' %}active{% endif %}" href="{{ url('home') }}" title="Home">
+                <i class="fa fa-home" aria-hidden="true"></i>
+            </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 {% block navbar %}
-                    <li>
-                        {% if is_granted('ROLE_CHIEF') %}
+                    <li {% if active_link == 'reservations' %}class="active"{% endif %}>
+                        {% if app.user and is_granted('ROLE_CHIEF') %}
                             <a href="{{ url('reservations_index') }}"><i class="fa fa-calendar" aria-hidden="true"></i>
                                 Reservations</a>
                         {% else %}
@@ -50,17 +52,17 @@
                     </li>
                     {% if app.user %}
                         {% if is_granted('ROLE_WAITER') %}
-                            <li>
+                            <li {% if active_link == 'menus' %}class="active"{% endif %}>
                                 <a href="{{ url('menus_index') }}"><i class="fa fa-cutlery" aria-hidden="true"></i>
                                     Menus</a>
                             </li>
-                            <li>
+                            <li {% if active_link == 'dishes' %}class="active"{% endif %}>
                                 <a href="{{ url('dishes_index') }}"><i class="fa fa-coffee" aria-hidden="true"></i>
                                     Dishes</a>
                             </li>
                         {% endif %}
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li>
+                            <li {% if active_link == 'users' %}class="active"{% endif %}>
                                 <a href="{{ url('user_index') }}"><i class="fa fa-users" aria-hidden="true"></i>
                                     Users</a>
                             </li>

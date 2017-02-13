@@ -14,6 +14,9 @@ class AppController extends Controller
 	 */
 	public function homeAction()
 	{
-		return $this->render('base.html.twig', array('title' => 'Ristaurante App'));
+		return $this->render('base.html.twig', array(
+			'title' => 'Ristaurante App',
+			'active_link' => 'home'
+		));
 	}
 }
