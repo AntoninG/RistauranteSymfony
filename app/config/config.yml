@@ -67,5 +67,5 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     "%mailer_spool%"
 
-parameters:
+dwbd_ristaurante:
     dishes_directory: '%kernel.root_dir%/../web/img/dishes'

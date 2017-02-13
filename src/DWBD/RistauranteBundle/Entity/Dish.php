@@ -44,7 +44,6 @@ class Dish
      *
      * @ORM\Column(name="description", type="text", nullable=true)
 	 *
-	 * @Assert\NotBlank()
 	 * @Assert\Length(max="6000", min="15")
 	 * @Assert\Type(type="string")
      */
