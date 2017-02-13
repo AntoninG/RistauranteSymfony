@@ -92,3 +92,6 @@ composer.lock
 
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~
+
+# Dishes images, specific to each version of the application
+/web/img/

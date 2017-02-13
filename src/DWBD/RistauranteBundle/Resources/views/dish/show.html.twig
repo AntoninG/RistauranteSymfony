@@ -1,5 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css">
+        #image-dish {
+            max-height: 400px;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-sm-4 inline-block">
@@ -12,16 +21,34 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            <h3>{{ dish.title }}</h3>
+        </div>
+    </div>
+
+    {% if dish.image is not null and dish.image is not empty %}
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <img id="image-dish" src="{{ asset('img/dishes/' ~ dish.image) }}" alt="Image" class="img-thumbnail">
+                </div>
+            </div>
+        </div>
+        <div class="spacer"></div>
+    {% endif %}
+
+    {% if dish.description is not null and dish.description is not empty %}
+        <div class="row">
+            <div class="col-md-2 hidden-sm"></div>
+            <div class="col-xs-8">
+                <p class="center-block text-center">{{ dish.description }}</p>
+            </div>
+            <div class="col-md-2 hidden-sm"></div>
+        </div>
+    {% endif %}
     <table>
         <tbody>
-        <tr>
-            <th>Title</th>
-            <td>{{ dish.title }}</td>
-        </tr>
-        <tr>
-            <th>Description</th>
-            <td>{{ dish.description }}</td>
-        </tr>
         <tr>
             <th>Price</th>
             <td>{{ dish.price }}</td>
@@ -33,10 +60,6 @@
         <tr>
             <th>Homemade</th>
             <td>{% if dish.homemade %}Yes{% else %}No{% endif %}</td>
-        </tr>
-        <tr>
-            <th>Image</th>
-            <td>{{ dish.image }}</td>
         </tr>
         <tr>
             <th>Category</th>

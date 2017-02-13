@@ -47,6 +47,11 @@ code {
 	display: inline-block;
 }
 
+.spacer {
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+}
+
 /** Tables */
 thead th {
 	font-weight: bold;

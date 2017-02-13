@@ -1,5 +1,14 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css">
+        span[rel=popover] {
+            cursor: zoom-in;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col-sm-6 inline-block">
@@ -17,7 +26,7 @@
     {% if dishes is not empty %}
         {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>Title</th>
@@ -47,7 +56,7 @@
                         </td>
                         <td>
                             {% if dish.image is not null and dish.image is not empty %}
-                                <img src="{{ asset('img/dishes/' ~ dish.image) }}" class="img-responsive img-thumbnail">
+                                <span rel="popover" data-img="{{ asset('img/dishes/' ~ dish.image) }}">On hover</span>
                             {% else %}
                                 N/A
                             {% endif %}
@@ -82,4 +91,17 @@
         {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
     {% endif %}
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+		$('span[rel=popover]').popover({
+			html: true,
+			trigger: 'hover',
+			content: function () {
+				return '<img src="' + $(this).data('img') + '" class="img-rounded" height="250px"/>';
+			}
+		});
+    </script>
 {% endblock %}
