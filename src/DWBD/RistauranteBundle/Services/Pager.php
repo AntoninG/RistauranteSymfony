@@ -33,7 +33,7 @@ class Pager
 	 * @param int $limit
 	 * @param string $route
 	 */
-	function __construct(array $entities, $page, $limit, $route)
+	public function __construct(array $entities, $page, $limit, $route)
 	{
 		if (!is_array($entities)) {
 			throw new \InvalidArgumentException('$entities must be an array');

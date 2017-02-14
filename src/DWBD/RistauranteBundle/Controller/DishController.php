@@ -6,15 +6,13 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use DWBD\RistauranteBundle\Entity\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
-use DWBD\RistauranteBundle\Form\DishType;
+use DWBD\RistauranteBundle\Form\Type\DishType;
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Dish controller.
@@ -68,30 +66,24 @@ class DishController extends Controller
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
-		$options = array('isEditor' => $isEditor);
 
 		$dish = new Dish();
-		$form = $this->createForm(DishType::class, $dish, $options);
+		$form = $this->createForm(DishType::class, $dish, array('isEditor' => $isEditor));
 		$form->handleRequest($request);
 
-		if ($form->isSubmitted()) {
-			if ($form->isValid()) {
-				$em = $this->getDoctrine()->getManager();
+		if ($form->isSubmitted() && $form->isValid()) {
+			$dish->setAuthor($user)->checkHasBeenRefusedOrValidated();
 
-				$dish->setAuthor($user);
-				$check = $dish->checkHasBeenRefusedOrValidated();
-				$em->persist($dish);
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($dish);
 
-				try {
-					$em->flush($dish);
-					return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
-				} catch (UniqueConstraintViolationException $violationException) {
-					$this->addFlash('danger', 'The title you choose is already used.');
-				} catch (\Exception $e) {
-					$this->get('logger')->err($e->getMessage());
-				}
-			} else {
-				$this->addFlash('danger', 'There are errors in the form');
+			try {
+				$em->flush($dish);
+				return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
+			} catch (UniqueConstraintViolationException $violationException) {
+				$this->addFlash('danger', 'The title you choose is already used.');
+			} catch (\Exception $e) {
+				$this->get('logger')->err($e->getMessage());
 			}
 		}
 
@@ -149,18 +141,14 @@ class DishController extends Controller
 		$editForm = $this->createForm(DishType::class, $dish, $options);
 		$editForm->handleRequest($request);
 
-		if ($editForm->isSubmitted()) {
-			if ($editForm->isValid()) {
-				$dish->checkHasBeenRefusedOrValidated();
+		if ($editForm->isSubmitted() && $editForm->isValid()) {
+			$dish->checkHasBeenRefusedOrValidated();
 
-				try {
-					$this->getDoctrine()->getManager()->flush();
-					return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
-				} catch (UniqueConstraintViolationException $exception) {
-					$this->addFlash('danger', 'The title you choose is already used.');
-				}
-			} else {
-				$this->addFlash('danger', 'There are errors in the form');
+			try {
+				$this->getDoctrine()->getManager()->flush();
+				return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
+			} catch (UniqueConstraintViolationException $exception) {
+				$this->addFlash('danger', 'The title you choose is already used.');
 			}
 		}
 

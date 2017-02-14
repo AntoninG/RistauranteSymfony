@@ -1,6 +1,6 @@
 <?php
 
-namespace DWBD\RistauranteBundle\Form;
+namespace DWBD\RistauranteBundle\Form\Type;
 
 use DWBD\RistauranteBundle\Entity\Reservation;
 use Symfony\Component\Form\AbstractType;

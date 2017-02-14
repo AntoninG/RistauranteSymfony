@@ -4,6 +4,7 @@ namespace DWBD\RistauranteBundle\Command;
 
 
 use Doctrine\ORM\Query\QueryException;
+use DWBD\SecurityBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputInterface;
@@ -56,7 +57,7 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 				$chunk = array_chunk($recipients, 10);
 
 				foreach ($chunk as $array) {
-					$emails = array_map(function($user) {
+					$emails = array_map(function(User $user) {
 						return $user->getEmail();
 					}, $array);
 

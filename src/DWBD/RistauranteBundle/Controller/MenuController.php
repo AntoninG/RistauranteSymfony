@@ -6,7 +6,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use DWBD\RistauranteBundle\Entity\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
-use DWBD\RistauranteBundle\Form\MenuType;
+use DWBD\RistauranteBundle\Form\Type\MenuType;
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -66,10 +66,9 @@ class MenuController extends Controller
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
-		$options = array('isEditor' => $isEditor);
 
 		$menu = new Menu();
-		$form = $this->createForm(MenuType::class, $menu, $options);
+		$form = $this->createForm(MenuType::class, $menu, array('isEditor' => $isEditor));
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {

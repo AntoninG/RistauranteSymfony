@@ -1,6 +1,6 @@
 <?php
 
-namespace DWBD\SecurityBundle\Form;
+namespace DWBD\SecurityBundle\Form\Type;
 
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;

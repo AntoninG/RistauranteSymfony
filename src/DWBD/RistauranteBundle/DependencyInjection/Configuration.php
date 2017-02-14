@@ -14,7 +14,7 @@ class Configuration implements ConfigurationInterface
 	public function getConfigTreeBuilder()
 	{
 		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder
+		$treeBuilder
 			->root('dwbd_ristaurante')
 			->children()
 			->variableNode('dishes_directory')

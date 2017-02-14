@@ -204,29 +204,25 @@ class User implements UserInterface, \Serializable
         return $this->email;
     }
 
-    /**
-     * Set isActive
-     *
-     * @param boolean $isActive
-     *
-     * @return User
-     */
-    public function setIsActive($isActive)
-    {
-        $this->isActive = $isActive;
+	/**
+	 * @return bool
+	 */
+	public function isActive()
+	{
+		return $this->isActive;
+	}
 
-        return $this;
-    }
+	/**
+	 * @param bool $isActive
+	 * @return User
+	 */
+	public function setActive($isActive)
+	{
+		$this->isActive = $isActive;
+		return $this;
+	}
 
-    /**
-     * Get isActive
-     *
-     * @return bool
-     */
-    public function getIsActive()
-    {
-        return $this->isActive;
-    }
+
 
 	/**
 	 * Set dishes

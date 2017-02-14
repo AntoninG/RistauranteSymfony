@@ -4,7 +4,7 @@ namespace DWBD\SecurityBundle\Controller;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use DWBD\SecurityBundle\Entity\User;
-use DWBD\SecurityBundle\Form\UserType;
+use DWBD\SecurityBundle\Form\Type\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

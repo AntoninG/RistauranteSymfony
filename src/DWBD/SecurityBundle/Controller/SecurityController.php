@@ -3,7 +3,6 @@
 namespace DWBD\SecurityBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -88,10 +87,8 @@ class SecurityController extends Controller
 
 		// I know, not a good idea to send a mail with the plain password
 		// But I don't give a f**k to push security to this level on this project =S
-		$message = \Swift_Message::newInstance()
-			->setSubject("[INFO] - Ristaurante - Password reset")
-			->setFrom($this->getParameter("mailer_user"))
-			->setTo($email)
+		$message = \Swift_Message::newInstance()->setSubject("[INFO] - Ristaurante - Password reset")
+			->setFrom($this->getParameter("mailer_user"))->setTo($email)
 			->setBody(
 				$this->renderView(
 					'emails/reset-password.html.twig',
@@ -99,7 +96,6 @@ class SecurityController extends Controller
 				),
 				'text/html'
 			);
-
 		$this->get("mailer")->send($message);
 
 		$this->addFlash('success', 'A mail was sent to ' . $email . ' with your new password');
