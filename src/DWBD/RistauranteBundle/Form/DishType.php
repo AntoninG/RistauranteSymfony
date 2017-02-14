@@ -66,7 +66,7 @@ class DishType extends AbstractType
 					'required' => false
 				)
 			)
-			->add('image', FileType::class, array(
+			->add('file', FileType::class, array(
 					'label' => 'Image',
 					'trim' => true,
 					'required' => false

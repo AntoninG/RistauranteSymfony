@@ -11,8 +11,10 @@
             opacity: 1;
         }
 
-        #{{ edit_form.homemade.vars.id }} {
-            display: none;
+        #{{ edit_form.homemade.vars.id }}
+        {
+            display: none
+        ;
         }
     </style>
 {% endblock %}
@@ -23,7 +25,8 @@
             <h1>Dish edit</h1>
         </div>
         <div class="col-sm-2 pull-right p-t-25 inline-block">
-            <a href="{{ path('dishes_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span> Back to the list</a>
+            <a href="{{ path('dishes_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span> Back to the
+                list</a>
         </div>
     </div>
 
@@ -85,9 +88,9 @@
         </div>
 
         <div class="form-group col-sm-4">
-            {{ form_label(edit_form.image) }}
-            {{ form_errors(edit_form.image) }}
-            {{ form_widget(edit_form.image) }}
+            {{ form_label(edit_form.file) }}
+            {{ form_errors(edit_form.file) }}
+            {{ form_widget(edit_form.file) }}
         </div>
     </div>
     <div class="row">
@@ -109,6 +112,14 @@
     </div>
     {{ form_end(delete_form) }}
 
+    {% if dish.image is not null and dish.image is not empty %}
+        <div class="row">
+            <div class="col-sm-12 text-right" style="max-height: 120px !important;">
+                <img src="{{ asset('img/dishes/' ~ dish.image) }}" class="img-thumbnail"/>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block javascripts %}
@@ -116,7 +127,10 @@
     <script type="text/javascript">
 		var homemade = $("#{{ edit_form.homemade.vars.id }}");
 
-		checkHomemade();
+        {% if dish.homemade == true %}
+		homemade.parent('label').addClass('active');
+		homemade.prop('checked', true);
+        {% endif %}
 
 		homemade.on('change', checkHomemade);
 

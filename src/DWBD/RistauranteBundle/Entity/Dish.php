@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -14,58 +15,59 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="dish")
  * @ORM\Entity(repositoryClass="DWBD\RistauranteBundle\Repository\DishRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Dish
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+	/**
+	 * @var int
+	 *
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=80, unique=true)
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="title", type="string", length=80, unique=true)
 	 *
 	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Length(min="5", max="80")
 	 * @Assert\Type(type="string")
-     */
-    private $title;
+	 */
+	private $title;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="text", nullable=true)
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="description", type="text", nullable=true)
 	 *
 	 * @Assert\Length(max="6000", min="15")
 	 * @Assert\Type(type="string")
-     */
-    private $description;
+	 */
+	private $description;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="price", type="float")
+	/**
+	 * @var float
+	 *
+	 * @ORM\Column(name="price", type="float")
 	 *
 	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="float")
 	 * @Assert\GreaterThan(value="0.0")
-     */
-    private $price;
+	 */
+	private $price;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="state", type="integer")
+	/**
+	 * @var int
+	 *
+	 * @ORM\Column(name="state", type="integer")
 	 * @Enum({
 	 *     StateEnum::STATE_DRAFT,
 	 *     StateEnum::STATE_WAITING,
@@ -77,47 +79,81 @@ class Dish
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
-     */
-    private $state;
+	 */
+	private $state;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="homemade", type="boolean")
+	/**
+	 * @var bool
+	 *
+	 * @ORM\Column(name="homemade", type="boolean")
 	 *
 	 * @Assert\Type(type="bool")
-     */
-    private $homemade;
+	 */
+	private $homemade;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(name="image", type="text", nullable=true)
 	 *
+	 */
+	private $image;
+
+	/**
 	 * @Assert\Image(
 	 *     mimeTypes={"image/bmp", "image/png", "image/gif", "image/jpg", "image/jpeg"},
 	 *     mimeTypesMessage="Only bmp, gif, png and jpg allowed",
 	 *     maxSize="20M",
 	 *     maxSizeMessage="20M maximum"
-	 *	)
+	 * )
 	 */
-    private $image;
+	private $file;
+
+	private $temp;
+
+	/**
+	 * Sets file.
+	 *
+	 * @param UploadedFile $file
+	 */
+	public function setFile(UploadedFile $file = null)
+	{
+		$this->file = $file;
+		// check if we have an old image path
+		if (isset($this->path)) {
+			// store the old name to delete after the update
+			$this->temp = $this->path;
+			$this->path = null;
+		} else {
+			$this->path = 'initial';
+		}
+	}
+
+	/**
+	 * Get file.
+	 *
+	 * @return UploadedFile
+	 */
+	public function getFile()
+	{
+		return $this->file;
+	}
 
 	/**
 	 * @var int
 	 *
 	 * @ORM\Column(name="category", type="integer", nullable=true)
 	 * @Enum({
-	 *		CategoryEnum::ENTREE,
-	 *     	CategoryEnum::DISH,
-	 *     	CategoryEnum::DESSERT,
-	 *     	CategoryEnum::CHEESE_PLATE,
-	 *     	CategoryEnum::APPETIZER
+	 *        CategoryEnum::ENTREE,
+	 *        CategoryEnum::DISH,
+	 *        CategoryEnum::DESSERT,
+	 *        CategoryEnum::CHEESE_PLATE,
+	 *        CategoryEnum::APPETIZER
 	 * })
 	 *
 	 * @Assert\Type(type="integer")
 	 */
-    private $category;
+	private $category;
 
 	/**
 	 * @var array
@@ -126,14 +162,14 @@ class Dish
 	 *
 	 * @Assert\Type(type="array")
 	 */
-    private $allergens;
+	private $allergens;
 
 	/**
 	 * @var boolean
 	 *
 	 * @ORM\Column(name="has_been_refused_or_validated", type="boolean")
 	 */
-    private $hasBeenRefusedOrValidated;
+	private $hasBeenRefusedOrValidated;
 
 	/**
 	 * @var User
@@ -141,14 +177,14 @@ class Dish
 	 * @ORM\ManyToOne(targetEntity="DWBD\SecurityBundle\Entity\User", inversedBy="dishes")
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
 	 */
-    private $author;
+	private $author;
 
 	/**
 	 * @var ArrayCollection<Menu>
 	 *
 	 * @ORM\ManyToMany(targetEntity="Menu", mappedBy="dishes")
 	 */
-    private $menus;
+	private $menus;
 
 	/**
 	 * Constructor
@@ -159,135 +195,135 @@ class Dish
 		$this->hasBeenRefusedOrValidated = false;
 	}
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
-    /**
-     * Set title
-     *
-     * @param string $title
-     *
-     * @return Dish
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
+	/**
+	 * Set title
+	 *
+	 * @param string $title
+	 *
+	 * @return Dish
+	 */
+	public function setTitle($title)
+	{
+		$this->title = $title;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
+	/**
+	 * Get title
+	 *
+	 * @return string
+	 */
+	public function getTitle()
+	{
+		return $this->title;
+	}
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Dish
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
+	/**
+	 * Set description
+	 *
+	 * @param string $description
+	 *
+	 * @return Dish
+	 */
+	public function setDescription($description)
+	{
+		$this->description = $description;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	/**
+	 * Get description
+	 *
+	 * @return string
+	 */
+	public function getDescription()
+	{
+		return $this->description;
+	}
 
-    /**
-     * Set price
-     *
-     * @param float $price
-     *
-     * @return Dish
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
+	/**
+	 * Set price
+	 *
+	 * @param float $price
+	 *
+	 * @return Dish
+	 */
+	public function setPrice($price)
+	{
+		$this->price = $price;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get price
-     *
-     * @return float
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
+	/**
+	 * Get price
+	 *
+	 * @return float
+	 */
+	public function getPrice()
+	{
+		return $this->price;
+	}
 
-    /**
-     * Set state
-     *
-     * @param integer $state
-     *
-     * @return Dish
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
+	/**
+	 * Set state
+	 *
+	 * @param integer $state
+	 *
+	 * @return Dish
+	 */
+	public function setState($state)
+	{
+		$this->state = $state;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get state
-     *
-     * @return int
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
+	/**
+	 * Get state
+	 *
+	 * @return int
+	 */
+	public function getState()
+	{
+		return $this->state;
+	}
 
-    /**
-     * Set homemade
-     *
-     * @param boolean $homemade
-     *
-     * @return Dish
-     */
-    public function setHomemade($homemade)
-    {
-        $this->homemade = $homemade;
+	/**
+	 * Set homemade
+	 *
+	 * @param boolean $homemade
+	 *
+	 * @return Dish
+	 */
+	public function setHomemade($homemade)
+	{
+		$this->homemade = $homemade;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get homemade
-     *
-     * @return bool
-     */
-    public function isHomemade()
-    {
-        return $this->homemade;
-    }
+	/**
+	 * Get homemade
+	 *
+	 * @return bool
+	 */
+	public function isHomemade()
+	{
+		return $this->homemade;
+	}
 
 	/**
 	 * @return string
@@ -377,39 +413,39 @@ class Dish
 		return $this;
 	}
 
-    /**
-     * Get homemade
-     *
-     * @return boolean
-     */
-    public function getHomemade()
-    {
-        return $this->homemade;
-    }
+	/**
+	 * Get homemade
+	 *
+	 * @return boolean
+	 */
+	public function getHomemade()
+	{
+		return $this->homemade;
+	}
 
-    /**
-     * Add menu
-     *
-     * @param Menu $menu
-     *
-     * @return Dish
-     */
-    public function addMenu(Menu $menu)
-    {
-        $this->menus[] = $menu;
+	/**
+	 * Add menu
+	 *
+	 * @param Menu $menu
+	 *
+	 * @return Dish
+	 */
+	public function addMenu(Menu $menu)
+	{
+		$this->menus[] = $menu;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove menu
-     *
-     * @param Menu $menu
-     */
-    public function removeMenu(Menu $menu)
-    {
-        $this->menus->removeElement($menu);
-    }
+	/**
+	 * Remove menu
+	 *
+	 * @param Menu $menu
+	 */
+	public function removeMenu(Menu $menu)
+	{
+		$this->menus->removeElement($menu);
+	}
 
 	/**
 	 * @return bool
@@ -432,6 +468,77 @@ class Dish
 		}
 
 		return $this;
+	}
+
+	public function getAbsolutePath()
+	{
+		return null === $this->image
+			? null
+			: $this->getUploadRootDir() . '/' . $this->image;
+	}
+
+	public function getWebPath()
+	{
+		return null === $this->image
+			? null
+			: $this->getUploadDir() . '/' . $this->image;
+	}
+
+	protected function getUploadRootDir()
+	{
+		return __DIR__ . '/../../../../web/' . $this->getUploadDir();
+	}
+
+	protected function getUploadDir()
+	{
+		return 'img/dishes';
+	}
+
+	/**
+	 * @ORM\PrePersist()
+	 * @ORM\PreUpdate()
+	 */
+	public function preUpload()
+	{
+		if (null !== $this->getFile()) {
+			// do whatever you want to generate a unique name
+			$filename = sha1(uniqid(mt_rand(), true));
+			$this->image = $filename . '.' . $this->getFile()->guessExtension();
+		}
+	}
+
+	/**
+	 * @ORM\PostPersist()
+	 * @ORM\PostUpdate()
+	 */
+	public function upload()
+	{
+		if (null === $this->getFile()) {
+			return;
+		}
+		// if there is an error when moving the file, an exception will
+		// be automatically thrown by move(). This will properly prevent
+		// the entity from being persisted to the database on error
+		$this->getFile()->move($this->getUploadRootDir(), $this->image);
+
+		// check if we have an old image
+		if (isset($this->temp)) {
+			// delete the old image
+			@unlink($this->getUploadRootDir() . '/' . $this->temp);
+			// clear the temp image path
+			$this->temp = null;
+		}
+		$this->file = null;
+	}
+
+	/**
+	 * @ORM\PostRemove()
+	 */
+	public function removeUpload()
+	{
+		if ($file = $this->getAbsolutePath()) {
+			@unlink($file);
+		}
 	}
 
 }

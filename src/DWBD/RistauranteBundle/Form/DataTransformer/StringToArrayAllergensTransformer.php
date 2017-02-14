@@ -37,6 +37,9 @@ class StringToArrayAllergensTransformer implements DataTransformerInterface
 
 		$array = explode(PHP_EOL, $string);
 		$array = array_filter($array, "trim");
+		$array = array_map(function($element) {
+			if (!empty($element)) return $element;
+		}, $array);
 
 		return $array;
 	}

@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -77,6 +78,9 @@ class UserController extends Controller
 					return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 				} catch (UniqueConstraintViolationException $exception) {
 					$this->addFlash('danger', 'The email or login you tried are already used');
+				} catch (Exception $e) {
+					$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
+					error_log($e->getMessage());
 				}
 
 			} else {
@@ -133,6 +137,9 @@ class UserController extends Controller
 					return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 				} catch (UniqueConstraintViolationException $exception) {
 					$this->addFlash('danger', 'The email or login you tried are already used');
+				} catch (Exception $e) {
+					$this->addFlash('danger', 'An error occurred during edition. Please contact your administrator');
+					error_log($e->getMessage());
 				}
 			} else {
 				$this->addFlash('danger', 'There are errors in the form');

@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use \Symfony\Component\HttpFoundation\Response;
 
@@ -36,8 +37,8 @@ class SecurityController extends Controller
 
 		return $this->render('DWBDSecurityBundle:security:login.html.twig', array(
 			'last_username' => $lastUsername,
-			'error'         => $error,
-			'title' 		=> 'Login'
+			'error' => $error,
+			'title' => 'Login'
 		));
 	}
 
@@ -52,13 +53,72 @@ class SecurityController extends Controller
 
 	/**
 	 * @Route("/reset", name="reset_password")
-	 * @Method({"GET", "POST"})
+	 * @Method({"POST"})
 	 *
 	 * @param Request $request
 	 * @return Response
 	 */
 	public function resetPasswordAction(Request $request)
 	{
+		$email = $request->request->get('resetEmail');
+		$email = trim($email);
 
+		$repository = $this->getDoctrine()->getRepository('DWBDSecurityBundle:User');
+		$user = $repository->findOneBy(array('email' => $email));
+
+		if (!is_null($user) && is_object($user)) {
+			$newPassword = $this->randomPassword();
+			$encoder = $this->get('security.password_encoder');
+			$encoded = $encoder->encodePassword($user, $newPassword);
+			$user->setPassword($encoded);
+
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
+
+			$error = false;
+			try {
+				$em->flush($user);
+			} catch (Exception $e) {
+				$this->addFlash('danger', 'An error occurred during the process. Please contact your administrator.');
+				error_log($e->getMessage());
+				$error = true;
+			}
+
+			// I know, not a good idea to send a mail with the plain password
+			// But I don't give a f**k to push security to this level on this project =S
+			if (!$error) {
+				$message = \Swift_Message::newInstance()
+					->setSubject("[INFO] - Ristaurante - Password reset")
+					->setFrom($this->getParameter("mailer_user"))
+					->setTo($email)
+					->setBody(
+						$this->renderView(
+							'emails/reset-password.html.twig',
+							array('password' => $newPassword)
+						),
+						'text/html'
+					);
+
+				$this->get("mailer")->send($message);
+
+				$this->addFlash('success', 'A mail was sent to ' . $email . ' with your new password');
+			}
+		} else {
+			$this->addFlash('danger', 'No user found on for this email. No password reset was performed.');
+		}
+
+		return $this->redirectToRoute('login');
+	}
+
+	private function randomPassword()
+	{
+		$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+		$pass = array();
+		$alphaLength = strlen($alphabet) - 1;
+		for ($i = 0; $i < 8; $i++) {
+			$n = rand(0, $alphaLength);
+			$pass[] = $alphabet[$n];
+		}
+		return implode($pass);
 	}
 }

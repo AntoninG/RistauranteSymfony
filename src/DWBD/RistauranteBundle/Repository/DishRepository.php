@@ -13,20 +13,4 @@ use \Doctrine\DBAL\Exception\InvalidArgumentException;
  */
 class DishRepository extends EntityRepository
 {
-	public function totalRowCount(array $criteria = array())
-	{
-		$query = $this->createQueryBuilder('d');
-
-		foreach ($criteria as $key => $value) {
-			if (is_array($value)) {
-				throw new InvalidArgumentException('All values of criteria array must be object or primitive type, except array');
-			} else if (is_object($value)) {
-				$query = $query->where('d.' . $key . ' = :' . $key . '_id')->setParameter($key, $value->getId());
-			} else {
-				$query = $query->where('d.' . $key . ' = :' . $key)->setParameter($key, $value);
-			}
-		}
-
-		return count($query->getQuery()->getScalarResult());
-	}
 }

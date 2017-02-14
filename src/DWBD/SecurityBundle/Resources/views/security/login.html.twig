@@ -7,20 +7,62 @@
 
 {% block content %}
 
-<div class="card card-container">
-    <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
-    <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
-    <p id="profile-name" class="profile-name-card"></p>
-    {% if error %}
-	<div class="text-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-	{% endif %}
-    <form class="form-signin" action="{{ path('login') }}" method="post">
-        <input type="text" id="username" class="form-control" name="_username" value="{{ last_username }}" required="required" placeholder="Login" autofocus/>
-        <input type="password" id="password" class="form-control" name="_password" placeholder="Password" required="required"/>
-        <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
-    </form><!-- /form -->
-    <a href="#" class="forgot-password">
-        Forgot the password?
-    </a>
-</div><!-- /card-container -->
+    <div class="card card-container">
+        <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+        <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"/>
+        <p id="profile-name" class="profile-name-card"></p>
+        {% if error %}
+            <div class="text-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+        <form class="form-signin" action="{{ path('login') }}" method="post">
+            <input type="text" id="username" class="form-control" name="_username" value="{{ last_username }}"
+                   required="required" placeholder="Login or email" autofocus/>
+            <input type="password" id="password" class="form-control" name="_password" placeholder="Password"
+                   required="required"/>
+            <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+        </form><!-- /form -->
+        <button type="button" class="btn btn-link forgot-password" data-toggle="modal" data-target="#modalResetPass">
+            Forgot the password?
+        </button>
+        {#<a href="#" class="">#}
+        {##}
+        {#</a>#}
+    </div><!-- /card-container -->
+
+    <div class="modal fade" id="modalResetPass" tabindex="-1" role="dialog">
+        <div class="vertical-alignment-helper">
+            <div class="modal-dialog  vertical-align-center" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Reset password</h4>
+                    </div>
+                    <form method="post" action="{{ path('reset_password') }}">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <label for="resetEmail">Your email</label>
+                                    <input class="form-control" type="email" id="resetEmail" name="resetEmail">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Reset password</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div>
+    </div><!-- /.modal -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+		$('#modalResetPass').on('shown.bs.modal', function () {
+			$('#resetEmail').focus()
+		})
+    </script>
 {% endblock %}

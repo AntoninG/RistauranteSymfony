@@ -94,4 +94,4 @@ composer.lock
 */Entity/*~
 
 # Dishes images, specific to each version of the application
-/web/img/
+/web/img/dishes/*

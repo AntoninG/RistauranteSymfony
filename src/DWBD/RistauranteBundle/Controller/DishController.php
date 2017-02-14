@@ -38,10 +38,12 @@ class DishController extends Controller
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDRistauranteBundle:Dish');
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 
-		if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$totalRows = $repository->totalRowCount(array('author' => $user));
+		if ($user->getRole()[0] == RoleEnum::WAITER) {
+			$totalRows = count($repository->findBy(array('state' => StateEnum::STATE_VALIDATED)));
+		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
+			$totalRows = count($repository->findBy(array('author' => $user)));
 		} else {
-			$totalRows = $repository->totalRowCount();
+			$totalRows = count($repository->findAll());
 		}
 
 		$page = $page < 1 ? 1 : $page;
@@ -50,7 +52,9 @@ class DishController extends Controller
 		$last = $last == 0 ? 1 : $last;
 		$lastMinusOne = $last - 1;
 
-		if ($user->getRole()[0] == RoleEnum::EDITOR) {
+		if ($user->getRole()[0] == RoleEnum::WAITER) {
+			$dishes = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), null, $limit, $start);
+		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
 			$dishes = $repository->findBy(array('author' => $user), null, $limit, $start);
 		} else {
 			$dishes = $repository->findBy(array(), null, $limit, $start);
@@ -88,19 +92,6 @@ class DishController extends Controller
 
 		if ($form->isSubmitted()) {
 			if ($form->isValid()) {
-				// Move the image before anything
-				if (!empty($dish->getImage())) {
-					$image = $dish->getImage();
-					$fileName = md5(uniqid()) . '.' . $image->guessExtension();
-					$image->move(
-						$this->getParameter('dishes_directory'),
-						$fileName
-					);
-					$dish->setImage($fileName);
-				} else {
-					$dish->setImage(null);
-				}
-
 				$em = $this->getDoctrine()->getManager();
 
 				$dish->setAuthor($user)
@@ -135,13 +126,20 @@ class DishController extends Controller
 	 */
 	public function showAction(Dish $dish)
 	{
+		$role = $this->get('security.token_storage')->getToken()->getUser()->getRole()[0];
+		if ($role == RoleEnum::WAITER && $dish->getState() != StateEnum::STATE_VALIDATED) {
+			throw $this->createAccessDeniedException();
+		}
+
 		$deleteForm = $this->createDeleteForm($dish);
 
 		return $this->render('DWBDRistauranteBundle:dish:show.html.twig', array(
 			'dish' => $dish,
 			'delete_form' => $deleteForm->createView(),
 			'title' => $dish->getTitle(),
-			'active_link' => 'dishes'
+			'active_link' => 'dishes',
+			'categories' => CategoryEnum::getCategoriesTranslation(),
+			'states' => StateEnum::getStatesTranslation()
 		));
 	}
 
@@ -160,13 +158,6 @@ class DishController extends Controller
 			'isEditor' => $isEditor,
 			'refusedOrValidated' => $dish->hasBeenRefusedOrValidated()
 		);
-
-		// Ensure there is no error on editing a form with an image
-		if (!is_null($dish->getImage()) && !empty($dish->getImage())) {
-			$dish->setImage(
-				new File($this->getParameter('dishes_directory') . '/' . $dish->getImage())
-			);
-		}
 
 		$deleteForm = $this->createDeleteForm($dish);
 		$editForm = $this->createForm(DishType::class, $dish, $options);
