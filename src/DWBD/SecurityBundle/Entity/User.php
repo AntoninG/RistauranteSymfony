@@ -2,7 +2,6 @@
 
 namespace DWBD\SecurityBundle\Entity;
 
-use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -301,17 +300,17 @@ class User implements UserInterface, \Serializable
 	}
 
 	/**
-	 * Get the user's role
+	 * Get the user's roles
 	 *
 	 * @return array
 	 */
-	public function getRole()
+	public function getRoles()
 	{
 		return $this->role;
 	}
 
 	/**
-	 * Set the user's role
+	 * Set the user's roles
 	 *
 	 * @param array $role
 	 */
@@ -319,6 +318,7 @@ class User implements UserInterface, \Serializable
 	{
 		$this->role = $role;
 	}
+
 
 	/**
 	 * Get the user's salt

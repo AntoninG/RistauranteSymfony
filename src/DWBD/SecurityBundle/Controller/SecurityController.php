@@ -66,47 +66,43 @@ class SecurityController extends Controller
 		$repository = $this->getDoctrine()->getRepository('DWBDSecurityBundle:User');
 		$user = $repository->findOneBy(array('email' => $email));
 
-		if (!is_null($user) && is_object($user)) {
-			$newPassword = $this->randomPassword();
-			$encoder = $this->get('security.password_encoder');
-			$encoded = $encoder->encodePassword($user, $newPassword);
-			$user->setPassword($encoded);
-
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($user);
-
-			$error = false;
-			try {
-				$em->flush($user);
-			} catch (Exception $e) {
-				$this->addFlash('danger', 'An error occurred during the process. Please contact your administrator.');
-				error_log($e->getMessage());
-				$error = true;
-			}
-
-			// I know, not a good idea to send a mail with the plain password
-			// But I don't give a f**k to push security to this level on this project =S
-			if (!$error) {
-				$message = \Swift_Message::newInstance()
-					->setSubject("[INFO] - Ristaurante - Password reset")
-					->setFrom($this->getParameter("mailer_user"))
-					->setTo($email)
-					->setBody(
-						$this->renderView(
-							'emails/reset-password.html.twig',
-							array('password' => $newPassword)
-						),
-						'text/html'
-					);
-
-				$this->get("mailer")->send($message);
-
-				$this->addFlash('success', 'A mail was sent to ' . $email . ' with your new password');
-			}
-		} else {
+		if (is_null($user) || !is_object($user)) {
 			$this->addFlash('danger', 'No user found on for this email. No password reset was performed.');
+			return $this->redirectToRoute('login');
 		}
 
+		$newPassword = $this->randomPassword();
+		$encoded = $this->get('security.password_encoder')->encodePassword($user, $newPassword);
+		$user->setPassword($encoded);
+
+		$em = $this->getDoctrine()->getManager();
+		$em->persist($user);
+
+		try {
+			$em->flush($user);
+		} catch (Exception $e) {
+			$this->addFlash('danger', 'An error occurred during the process. Please contact your administrator.');
+			$this->get('logger')->error($e->getMessage());
+			return $this->redirectToRoute('login');
+		}
+
+		// I know, not a good idea to send a mail with the plain password
+		// But I don't give a f**k to push security to this level on this project =S
+		$message = \Swift_Message::newInstance()
+			->setSubject("[INFO] - Ristaurante - Password reset")
+			->setFrom($this->getParameter("mailer_user"))
+			->setTo($email)
+			->setBody(
+				$this->renderView(
+					'emails/reset-password.html.twig',
+					array('password' => $newPassword)
+				),
+				'text/html'
+			);
+
+		$this->get("mailer")->send($message);
+
+		$this->addFlash('success', 'A mail was sent to ' . $email . ' with your new password');
 		return $this->redirectToRoute('login');
 	}
 
