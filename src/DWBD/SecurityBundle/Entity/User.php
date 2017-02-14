@@ -2,6 +2,7 @@
 
 namespace DWBD\SecurityBundle\Entity;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -75,17 +76,17 @@ class User implements UserInterface, \Serializable
 	 * @var array
 	 *
 	 * @ORM\Column(
-	 *     name="role",
+	 *     name="roles",
 	 *     type="json_array",
-	 *     length=40,
-	 *     columnDefinition="ENUM(RoleEnum::USER, RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN)"
+	 *     length=40
 	 * )
 	 *
+	 * @Enum({RoleEnum::USER, RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN})
 	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 */
-    private $role;
+    private $roles;
 
 	/**
 	 * @var string
@@ -306,17 +307,17 @@ class User implements UserInterface, \Serializable
 	 */
 	public function getRoles()
 	{
-		return $this->role;
+		return $this->roles;
 	}
 
 	/**
 	 * Set the user's roles
 	 *
-	 * @param array $role
+	 * @param array $roles
 	 */
-	public function setRole($role)
+	public function setRoles($roles)
 	{
-		$this->role = $role;
+		$this->roles = $roles;
 	}
 
 

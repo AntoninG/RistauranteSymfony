@@ -44,6 +44,7 @@ class MenuType extends AbstractType
 
 			))
 			->add('displayOrder', IntegerType::class, array(
+				'data' => 1,
 				'required' => true,
 				'label' => 'Display Order',
 				'scale' => 0,

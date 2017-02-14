@@ -38,37 +38,21 @@ class DishController extends Controller
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDRistauranteBundle:Dish');
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 
-		if ($user->getRole()[0] == RoleEnum::WAITER) {
-			$totalRows = count($repository->findBy(array('state' => StateEnum::STATE_VALIDATED)));
-		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$totalRows = count($repository->findBy(array('author' => $user)));
+		if ($user->getRoles()[0] == RoleEnum::WAITER) {
+			$dishes = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('title' => 'ASC'));
+		} else if ($user->getRoles()[0] == RoleEnum::EDITOR) {
+			$dishes = $repository->findBy(array('author' => $user), array('title' => 'ASC'));
 		} else {
-			$totalRows = count($repository->findAll());
+			$dishes = $repository->findBy(array(), array('title' => 'ASC'));
 		}
 
-		$page = $page < 1 ? 1 : $page;
-		$start = ($page - 1) * $limit;
-		$last = ceil($totalRows / $limit);
-		$last = $last == 0 ? 1 : $last;
-		$lastMinusOne = $last - 1;
-
-		if ($user->getRole()[0] == RoleEnum::WAITER) {
-			$dishes = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('title' => 'ASC'), $limit, $start);
-		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$dishes = $repository->findBy(array('author' => $user), array('title' => 'ASC'), $limit, $start);
-		} else {
-			$dishes = $repository->findBy(array(), array('title' => 'ASC'), $limit, $start);
-		}
+		$pager = $this->get('app.pager_factory')->createPager($dishes, $page, $limit, 'dishes_index');
 
 		return $this->render('DWBDRistauranteBundle:dish:index.html.twig', array(
-			'dishes' => $dishes,
 			'title' => 'Dishes',
 			'categories' => CategoryEnum::getCategoriesTranslation(),
 			'states' => StateEnum::getStatesTranslation(),
-			'number' => ($start + 1) . ' to ' . ($start + count($dishes)) . ' / ' . $totalRows . ' entries',
-			'page' => $page,
-			'last' => $last,
-			'lastMinusOne' => $lastMinusOne,
+			'pager' => $pager,
 			'active_link' => 'dishes'
 		));
 	}
@@ -83,7 +67,7 @@ class DishController extends Controller
 	public function newAction(Request $request)
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
-		$isEditor = $user->getRole()[0] == RoleEnum::EDITOR;
+		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
 		$options = array('isEditor' => $isEditor);
 
 		$dish = new Dish();
@@ -101,8 +85,10 @@ class DishController extends Controller
 				try {
 					$em->flush($dish);
 					return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
-				} catch (UniqueConstraintViolationException $exception) {
+				} catch (UniqueConstraintViolationException $violationException) {
 					$this->addFlash('danger', 'The title you choose is already used.');
+				} catch (\Exception $e) {
+					$this->get('logger')->err($e->getMessage());
 				}
 			} else {
 				$this->addFlash('danger', 'There are errors in the form');
@@ -126,7 +112,7 @@ class DishController extends Controller
 	 */
 	public function showAction(Dish $dish)
 	{
-		$role = $this->get('security.token_storage')->getToken()->getUser()->getRole()[0];
+		$role = $this->get('security.token_storage')->getToken()->getUser()->getRoles()[0];
 		if ($role == RoleEnum::WAITER && $dish->getState() != StateEnum::STATE_VALIDATED) {
 			throw $this->createAccessDeniedException();
 		}
@@ -153,7 +139,7 @@ class DishController extends Controller
 	public function editAction(Request $request, Dish $dish)
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
-		$isEditor = $user->getRole()[0] == RoleEnum::EDITOR;
+		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
 		$options = array(
 			'isEditor' => $isEditor,
 			'refusedOrValidated' => $dish->hasBeenRefusedOrValidated()

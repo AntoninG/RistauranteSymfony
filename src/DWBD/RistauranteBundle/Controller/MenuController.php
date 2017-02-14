@@ -2,6 +2,7 @@
 
 namespace DWBD\RistauranteBundle\Controller;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use DWBD\RistauranteBundle\Entity\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
@@ -35,38 +36,22 @@ class MenuController extends Controller
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDRistauranteBundle:Menu');
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 
-		if ($user->getRole()[0] == RoleEnum::WAITER) {
-			$totalRows = count($repository->findBy(array('state' => StateEnum::STATE_VALIDATED)));
-		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$totalRows = count($repository->findBy(array('author' => $user)));
+		if ($user->getRoles()[0] == RoleEnum::WAITER) {
+			$menus = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('displayOrder' => 'DESC', 'title' => 'ASC'));
+		} else if ($user->getRoles()[0] == RoleEnum::EDITOR) {
+			$menus = $repository->findBy(array('author' => $user), array('displayOrder' => 'DESC', 'title' => 'ASC'));
 		} else {
-			$totalRows = count($repository->findAll());
+			$menus = $repository->findBy(array(), array('displayOrder' => 'DESC', 'title' => 'ASC'));
 		}
 
-		$page = $page < 1 ? 1 : $page;
-		$start = ($page - 1) * $limit;
-		$last = ceil($totalRows / $limit);
-		$last = $last == 0 ? 1 : $last;
-		$lastMinusOne = $last - 1;
-
-		if ($user->getRole()[0] == RoleEnum::WAITER) {
-			$menus = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
-		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$menus = $repository->findBy(array('author' => $user), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
-		} else {
-			$menus = $repository->findBy(array(), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
-		}
+		$pager = $this->get('app.pager_factory')->createPager($menus, $page, $limit, 'menus_index');
 
 		return $this->render('DWBDRistauranteBundle:menu:index.html.twig', array(
-			'menus' => $menus,
 			'title' => 'Menus',
 			'active_link' => 'menus',
 			'categories' => CategoryEnum::getCategoriesTranslation(),
 			'states' => StateEnum::getStatesTranslation(),
-			'number' => ($start + 1) . ' to ' . ($start + count($menus)) . ' / ' . $totalRows . ' entries',
-			'page' => $page,
-			'last' => $last,
-			'lastMinusOne' => $lastMinusOne
+			'pager' => $pager
 		));
 	}
 
@@ -79,20 +64,28 @@ class MenuController extends Controller
 	 */
 	public function newAction(Request $request)
 	{
-		$options = array('isCreation' => true);
+		$user = $this->get("security.token_storage")->getToken()->getUser();
+		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
+		$options = array('isEditor' => $isEditor);
+
 		$menu = new Menu();
 		$form = $this->createForm(MenuType::class, $menu, $options);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->getDoctrine()->getManager();
-			$user = $this->get("security.token_storage")->getToken()->getUser();
-			$menu->setAuthor($user)
-				->setState(StateEnum::STATE_DRAFT);
+			$menu->setAuthor($user);
 			$em->persist($menu);
-			$em->flush($menu);
 
-			return $this->redirectToRoute('menus_show', array('id' => $menu->getId()));
+			try {
+				$em->flush($menu);
+				return $this->redirectToRoute('menus_show', array('id' => $menu->getId()));
+			} catch (UniqueConstraintViolationException $violationException) {
+				$this->addFlash('danger', 'The title you choose is already used.');
+			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
+				$this->get('logger')->err($e->getMessage());
+			}
 		}
 
 		return $this->render('DWBDRistauranteBundle:menu:new.html.twig', array(
@@ -119,7 +112,8 @@ class MenuController extends Controller
 			'delete_form' => $deleteForm->createView(),
 			'title' => $menu->getTitle(),
 			'active_link' => 'menus',
-			'states' => StateEnum::getStatesTranslation()
+			'states' => StateEnum::getStatesTranslation(),
+			'categories' => CategoryEnum::getCategoriesTranslation()
 		));
 	}
 
@@ -137,9 +131,15 @@ class MenuController extends Controller
 		$editForm->handleRequest($request);
 
 		if ($editForm->isSubmitted() && $editForm->isValid()) {
-			$this->getDoctrine()->getManager()->flush();
-
-			return $this->redirectToRoute('menus_edit', array('id' => $menu->getId()));
+			try {
+				$this->getDoctrine()->getManager()->flush();
+				return $this->redirectToRoute('menus_show', array('id' => $menu->getId()));
+			} catch (UniqueConstraintViolationException $violationException) {
+				$this->addFlash('danger', 'The title you choose is already used.');
+			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
+				$this->get('logger')->err($e->getMessage());
+			}
 		}
 
 		return $this->render('DWBDRistauranteBundle:menu:edit.html.twig', array(

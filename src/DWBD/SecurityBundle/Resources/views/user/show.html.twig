@@ -23,7 +23,7 @@
             </tr>
             <tr>
                 <th><b>Role</b></th>
-                <td>{{ user.role|join(', ') }}</td>
+                <td>{{ user.roles|join(', ') }}</td>
             </tr>
             <tr class="{% if user.isActive %}success{% else %}danger{% endif %}">
                 <th><b>Active</b></th>

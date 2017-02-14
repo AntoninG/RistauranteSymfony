@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -32,23 +31,13 @@ class UserController extends Controller
 		$limit = $request->get('limit', 15);
 
 		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDSecurityBundle:User');
-		$totalRows = $repository->totalRowCount();
+		$users = $repository->findAll();
 
-		$page = $page < 1 ? 1 : $page;
-		$start = ($page - 1) * $limit;
-		$last = ceil($totalRows / $limit);
-		$last = $last == 0 ? 1 : $last;
-		$lastMinusOne = $last - 1;
-
-		$users = $repository->findBy(array(), null, $limit, $start);
+		$pager = $this->get('app.pager_factory')->createPager($users, $page, $limit, 'user_index');
 
 		return $this->render('DWBDSecurityBundle:user:index.html.twig', array(
-			'users' => $users,
 			'title' => 'Users',
-			'number' => ($start + 1) . ' to ' . ($start + count($users)) . ' / ' . $totalRows . ' entries',
-			'page' => $page,
-			'last' => $last,
-			'lastMinusOne' => $lastMinusOne,
+			'pager' => $pager,
 			'active_link' => 'users'
 		));
 	}
@@ -65,27 +54,23 @@ class UserController extends Controller
 		$form = $this->createForm(UserType::class, $user);
 		$form->handleRequest($request);
 
-		if ($form->isSubmitted()) {
-			if ($form->isValid()) {
-				$encoder = $this->get('security.password_encoder');
-				$encoded = $encoder->encodePassword($user, $user->getPassword());
-				$user->setPassword($encoded);
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($user);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$encoder = $this->get('security.password_encoder');
+			$encoded = $encoder->encodePassword($user, $user->getPassword());
+			$user->setPassword($encoded);
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($user);
 
-				try {
-					$em->flush($user);
-					return $this->redirectToRoute('user_show', array('id' => $user->getId()));
-				} catch (UniqueConstraintViolationException $exception) {
-					$this->addFlash('danger', 'The email or login you tried are already used');
-				} catch (Exception $e) {
-					$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
-					error_log($e->getMessage());
-				}
-
-			} else {
-				$this->addFlash('danger', 'There are errors in the form');
+			try {
+				$em->flush($user);
+				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+			} catch (UniqueConstraintViolationException $exception) {
+				$this->addFlash('danger', 'The email or login you tried are already used');
+			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
+				$this->get('logger')->err($e->getMessage());
 			}
+
 		}
 
 		return $this->render('DWBDSecurityBundle:user:new.html.twig', array(
@@ -126,23 +111,19 @@ class UserController extends Controller
 		$editForm = $this->createForm(UserType::class, $user);
 		$editForm->handleRequest($request);
 
-		if ($editForm->isSubmitted()) {
-			if ($editForm->isValid()) {
-				$encoder = $this->get('security.password_encoder');
-				$encoded = $encoder->encodePassword($user, $user->getPassword());
-				$user->setPassword($encoded);
+		if ($editForm->isSubmitted() && $editForm->isValid()) {
+			$encoder = $this->get('security.password_encoder');
+			$encoded = $encoder->encodePassword($user, $user->getPassword());
+			$user->setPassword($encoded);
 
-				try {
-					$this->getDoctrine()->getManager()->flush();
-					return $this->redirectToRoute('user_show', array('id' => $user->getId()));
-				} catch (UniqueConstraintViolationException $exception) {
-					$this->addFlash('danger', 'The email or login you tried are already used');
-				} catch (Exception $e) {
-					$this->addFlash('danger', 'An error occurred during edition. Please contact your administrator');
-					error_log($e->getMessage());
-				}
-			} else {
-				$this->addFlash('danger', 'There are errors in the form');
+			try {
+				$this->getDoctrine()->getManager()->flush();
+				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
+			} catch (UniqueConstraintViolationException $exception) {
+				$this->addFlash('danger', 'The email or login you tried are already used');
+			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during edition. Please contact your administrator');
+				$this->get('logger')->err($e->getMessage());
 			}
 		}
 

@@ -49,7 +49,7 @@ class UserType extends AbstractType
 				)
 			)
 			->add($builder->create(
-				'role', ChoiceType::class, array(
+				'roles', ChoiceType::class, array(
 					'choices' => RoleEnum::getRolesForForm(),
 					'label' => 'Role',
 					'attr' => array('class' => 'form-control'),

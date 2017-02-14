@@ -109,6 +109,7 @@ class Dish
 	 */
 	private $file;
 
+	/** @var  string */
 	private $temp;
 
 	/**
@@ -411,16 +412,6 @@ class Dish
 		$this->menus = $menus;
 
 		return $this;
-	}
-
-	/**
-	 * Get homemade
-	 *
-	 * @return boolean
-	 */
-	public function getHomemade()
-	{
-		return $this->homemade;
 	}
 
 	/**
