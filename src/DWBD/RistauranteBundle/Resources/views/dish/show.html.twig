@@ -109,6 +109,12 @@
         <div class="col-xs-0 col-sm-2 col-md-3"></div>
     </div>
 
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="text-muted">By {{ dish.author.username }}</p>
+        </div>
+    </div>
+
     {% if is_granted('ROLE_EDITOR') %}
         <div class="row">
             <div class="col-sm-1">
