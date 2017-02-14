@@ -1,32 +1,38 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>Menu</h1>
+    <div class="row">
+        <div class="col-sm-4 inline-block">
+            <h1>
+                {{ menu.title }}
+                {% if is_granted('ROLE_EDITOR') %}
+                    {% if menu.state == 1 %}
+                        {% set class_color = 'info' %}
+                    {% elseif menu.state == 2 %}
+                        {% set class_color = 'warning' %}
+                    {% elseif menu.state == 3 %}
+                        {% set class_color = 'danger' %}
+                    {% elseif menu.state == 4 %}
+                        {% set class_color = 'success' %}
+                    {% endif %}
+                    (<span class="text-{{ class_color }}">{{ states[menu.state] }}</span>)
+                {% endif %}
+            </h1>
+        </div>
+        <div class="col-sm-2 pull-right p-t-25 inline-block">
+            <a href="{{ path('menus_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span>
+                Back to the list
+            </a>
+        </div>
+    </div>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ menu.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ menu.title }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ menu.price }}</td>
-            </tr>
-            <tr>
-                <th>Displayorder</th>
-                <td>{{ menu.displayOrder }}</td>
-            </tr>
-            <tr>
-                <th>State</th>
-                <td>{{ menu.state }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="spacer"></div>
+
+    <div class="row">
+        <div class="col-xs-4">
+            <p class="lead text-center"><strong>Price : </strong> {{ menu.price }} €</p>
+        </div>
+    </div>
 
     <ul>
         <li>

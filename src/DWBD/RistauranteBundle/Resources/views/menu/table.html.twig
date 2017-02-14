@@ -1,0 +1,67 @@
+{% if menus is not empty %}
+    {% include ':table:pagination.html.twig' with {'route':'menus_index'} %}
+    <div class="row">
+        <div class="hidden-xs col-md-2"></div>
+        <div class="col-xs-12 col-md-8">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Price €</th>
+                        {% if is_granted('ROLE_EDITOR') %}
+                            <th>State</th>
+                        {% endif %}
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for menu in menus %}
+                        <tr>
+                            <td><a href="{{ path('menus_show', { 'id': menu.id }) }}">{{ menu.title }}</a></td>
+                            <td>{{ menu.price }}</td>
+                            {% if is_granted('ROLE_EDITOR') %}
+                                {% if menu.state == 1 %}
+                                    {% set class_color = 'info' %}
+                                {% elseif menu.state == 2 %}
+                                    {% set class_color = 'warning' %}
+                                {% elseif menu.state == 3 %}
+                                    {% set class_color = 'danger' %}
+                                {% elseif menu.state == 4 %}
+                                    {% set class_color = 'success' %}
+                                {% endif %}
+                                <td class="{{ class_color }}">
+                                    {{ states[menu.state] }}
+                                </td>
+                            {% endif %}
+                            <td>
+                                <a href="{{ path('menus_show', { 'id': menu.id }) }}" title="Show menu"
+                                   class="btn btn-info btn-sm">
+                                    <i class="fa fa-search-plus" aria-hidden="true"></i>
+                                    Show
+                                </a>
+                                {% if is_granted('ROLE_EDITOR') %}
+                                    <a href="{{ path('menus_edit', { 'id': menu.id }) }}" title="Edit menu"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                        Edit
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="hidden-xs col-md-2"></div>
+    </div>
+
+{% else %}
+    <div class="well well-lg text-center"><p>No menus available.</p></div>
+{% endif %}
+
+{% if menus is not empty %}
+    <p class="text-right">{{ number }}</p>
+    {% include ':table:pagination.html.twig' with {'route':'menus_index'} %}
+{% endif %}

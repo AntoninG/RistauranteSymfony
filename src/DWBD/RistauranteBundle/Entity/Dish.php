@@ -459,15 +459,16 @@ class Dish
 	 * Check if the dish has been refused or validated
 	 * If true, put the flag hasBeenRefusedOrValidated to true
 	 *
-	 * @return Dish
+	 * @return boolean
 	 */
 	public function checkHasBeenRefusedOrValidated()
 	{
 		if (in_array($this->state, array(StateEnum::STATE_REFUSED, StateEnum::STATE_VALIDATED)) && !$this->hasBeenRefusedOrValidated) {
 			$this->hasBeenRefusedOrValidated = true;
+			return true;
 		}
 
-		return $this;
+		return false;
 	}
 
 	public function getAbsolutePath()

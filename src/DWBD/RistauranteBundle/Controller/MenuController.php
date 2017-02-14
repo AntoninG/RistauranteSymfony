@@ -2,6 +2,7 @@
 
 namespace DWBD\RistauranteBundle\Controller;
 
+use DWBD\RistauranteBundle\Entity\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\RistauranteBundle\Form\MenuType;
@@ -26,21 +27,46 @@ class MenuController extends Controller
 	 * @Method("GET")
 	 * @Security("has_role('ROLE_WAITER')")
 	 */
-	public function indexAction()
+	public function indexAction(Request $request)
 	{
-		$em = $this->getDoctrine()->getManager();
+		$page = $request->get('page', 1);
+		$limit = $request->get('limit', 15);
+
+		$repository = $this->getDoctrine()->getManager()->getRepository('DWBDRistauranteBundle:Menu');
 		$user = $this->get("security.token_storage")->getToken()->getUser();
-		dump($user);
-		if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$menus = $em->getRepository('DWBDRistauranteBundle:Menu')->findByAuthor($user);
+
+		if ($user->getRole()[0] == RoleEnum::WAITER) {
+			$totalRows = count($repository->findBy(array('state' => StateEnum::STATE_VALIDATED)));
+		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
+			$totalRows = count($repository->findBy(array('author' => $user)));
 		} else {
-			$menus = $em->getRepository('DWBDRistauranteBundle:Menu')->findAll();
+			$totalRows = count($repository->findAll());
+		}
+
+		$page = $page < 1 ? 1 : $page;
+		$start = ($page - 1) * $limit;
+		$last = ceil($totalRows / $limit);
+		$last = $last == 0 ? 1 : $last;
+		$lastMinusOne = $last - 1;
+
+		if ($user->getRole()[0] == RoleEnum::WAITER) {
+			$menus = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
+		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
+			$menus = $repository->findBy(array('author' => $user), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
+		} else {
+			$menus = $repository->findBy(array(), array('displayOrder' => 'DESC', 'title' => 'ASC'), $limit, $start);
 		}
 
 		return $this->render('DWBDRistauranteBundle:menu:index.html.twig', array(
 			'menus' => $menus,
 			'title' => 'Menus',
-			'active_link' => 'menus'
+			'active_link' => 'menus',
+			'categories' => CategoryEnum::getCategoriesTranslation(),
+			'states' => StateEnum::getStatesTranslation(),
+			'number' => ($start + 1) . ' to ' . ($start + count($menus)) . ' / ' . $totalRows . ' entries',
+			'page' => $page,
+			'last' => $last,
+			'lastMinusOne' => $lastMinusOne
 		));
 	}
 
@@ -92,7 +118,8 @@ class MenuController extends Controller
 			'menu' => $menu,
 			'delete_form' => $deleteForm->createView(),
 			'title' => $menu->getTitle(),
-			'active_link' => 'menus'
+			'active_link' => 'menus',
+			'states' => StateEnum::getStatesTranslation()
 		));
 	}
 

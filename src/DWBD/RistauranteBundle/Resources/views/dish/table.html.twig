@@ -22,7 +22,16 @@
                     <td><a href="{{ path('dishes_show', { 'id': dish.id }) }}">{{ dish.title }}</a></td>
                     <td>{{ dish.price }}</td>
                     {% if is_granted('ROLE_EDITOR') %}
-                        <td class="{% if dish.state == 2 %}warning{% elseif dish.state == 3 %}danger{% elseif dish.state == 4 %}success{% endif %}">
+                        {% if dish.state == 1 %}
+                            {% set class_color = 'info' %}
+                        {% elseif dish.state == 2 %}
+                            {% set class_color = 'warning' %}
+                        {% elseif dish.state == 3 %}
+                            {% set class_color = 'danger' %}
+                        {% elseif dish.state == 4 %}
+                            {% set class_color = 'success' %}
+                        {% endif %}
+                        <td class="{{ class_color }}">
                             {{ states[dish.state] }}
                         </td>
                     {% endif %}
@@ -37,7 +46,7 @@
                     </td>
                     <td>
                         {% if dish.image is not null and dish.image is not empty %}
-                            <span rel="popover" data-img="{{ asset('img/dishes/' ~ dish.image) }}">On hover</span>
+                            <span rel="popover" data-img="{{ asset('img/dishes/' ~ dish.image) }}">Yes</span>
                         {% else %}
                             N/A
                         {% endif %}
@@ -66,8 +75,7 @@
     <div class="well well-lg text-center"><p>No dishes available.</p></div>
 {% endif %}
 
-
-    {% if dishes is not empty %}
-        <p class="text-right">{{ number }}</p>
-        {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
-    {% endif %}
+{% if dishes is not empty %}
+    <p class="text-right">{{ number }}</p>
+    {% include ':table:pagination.html.twig' with {'route':'dishes_index'} %}
+{% endif %}

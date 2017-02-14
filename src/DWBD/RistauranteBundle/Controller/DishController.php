@@ -53,11 +53,11 @@ class DishController extends Controller
 		$lastMinusOne = $last - 1;
 
 		if ($user->getRole()[0] == RoleEnum::WAITER) {
-			$dishes = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), null, $limit, $start);
+			$dishes = $repository->findBy(array('state' => StateEnum::STATE_VALIDATED), array('title' => 'ASC'), $limit, $start);
 		} else if ($user->getRole()[0] == RoleEnum::EDITOR) {
-			$dishes = $repository->findBy(array('author' => $user), null, $limit, $start);
+			$dishes = $repository->findBy(array('author' => $user), array('title' => 'ASC'), $limit, $start);
 		} else {
-			$dishes = $repository->findBy(array(), null, $limit, $start);
+			$dishes = $repository->findBy(array(), array('title' => 'ASC'), $limit, $start);
 		}
 
 		return $this->render('DWBDRistauranteBundle:dish:index.html.twig', array(
@@ -94,8 +94,8 @@ class DishController extends Controller
 			if ($form->isValid()) {
 				$em = $this->getDoctrine()->getManager();
 
-				$dish->setAuthor($user)
-					->checkHasBeenRefusedOrValidated();
+				$dish->setAuthor($user);
+				$check = $dish->checkHasBeenRefusedOrValidated();
 				$em->persist($dish);
 
 				try {

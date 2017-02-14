@@ -42,6 +42,7 @@ class ReservationController extends Controller
 	 *
 	 * @Route("/new", name="reservations_new")
 	 * @Method({"GET", "POST"})
+	 * @Security("has_role('ROLE_USER')")
 	 */
 	public function newAction(Request $request)
 	{

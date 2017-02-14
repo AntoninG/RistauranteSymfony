@@ -1,45 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>Menus list</h1>
+    <div class="row">
+        <div class="col-sm-6 inline-block">
+            <h1>Menus</h1>
+        </div>
+        {% if is_granted('ROLE_EDITOR') %}
+            <div class="col-sm-1 pull-right p-t-25 inline-block">
+                <a href="{{ url('menus_new') }}" title="New menu" class="btn btn-success">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    Add
+                </a>
+            </div>
+        {% endif %}
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Price</th>
-                <th>Displayorder</th>
-                <th>State</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for menu in menus %}
-            <tr>
-                <td><a href="{{ path('menus_show', { 'id': menu.id }) }}">{{ menu.id }}</a></td>
-                <td>{{ menu.title }}</td>
-                <td>{{ menu.price }}</td>
-                <td>{{ menu.displayOrder }}</td>
-                <td>{{ menu.state }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('menus_show', { 'id': menu.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('menus_edit', { 'id': menu.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% include 'DWBDRistauranteBundle:menu:table.html.twig' %}
 
-    <ul>
-        <li>
-            <a href="{{ path('menus_new') }}">Create a new menu</a>
-        </li>
-    </ul>
 {% endblock %}

@@ -12,7 +12,21 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-4 inline-block">
-            <h1>{{ dish.title }}</h1>
+            <h1>
+                {{ dish.title }}
+                {% if is_granted('ROLE_EDITOR') %}
+                    {% if dish.state == 1 %}
+                        {% set class_color = 'info' %}
+                    {% elseif dish.state == 2 %}
+                        {% set class_color = 'warning' %}
+                    {% elseif dish.state == 3 %}
+                        {% set class_color = 'danger' %}
+                    {% elseif dish.state == 4 %}
+                        {% set class_color = 'success' %}
+                    {% endif %}
+                    (<span class="text-{{ class_color }}">{{ states[dish.state] }}</span>)
+                {% endif %}
+            </h1>
         </div>
         <div class="col-sm-2 pull-right p-t-25 inline-block">
             <a href="{{ path('dishes_index') }}" class="btn btn-link"><span aria-hidden="true">&larr;</span>
@@ -78,6 +92,7 @@
         <div class="spacer"></div>
     {% endif %}
 
+    <div class="spacer"></div>
     <div class="row">
         <div class="col-xs-0 col-sm-2 col-md-3"></div>
         <div class="col-xs-12 col-sm-8 col-md-6">
@@ -93,14 +108,6 @@
         </div>
         <div class="col-xs-0 col-sm-2 col-md-3"></div>
     </div>
-    <table>
-        <tbody>
-        <tr>
-            <th>Allergens</th>
-            <td>{% if dish.allergens %}{{ dish.allergens|join(', ') }}{% endif %}</td>
-        </tr>
-        </tbody>
-    </table>
 
     {% if is_granted('ROLE_EDITOR') %}
         <div class="row">
