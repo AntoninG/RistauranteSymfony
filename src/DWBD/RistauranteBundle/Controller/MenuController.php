@@ -125,8 +125,15 @@ class MenuController extends Controller
 	 */
 	public function editAction(Request $request, Menu $menu)
 	{
+		$user = $this->get("security.token_storage")->getToken()->getUser();
+		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
+		$options = array(
+			'isEditor' => $isEditor,
+			'refusedOrValidated' => $menu->hasBeenRefusedOrValidated()
+		);
+
 		$deleteForm = $this->createDeleteForm($menu);
-		$editForm = $this->createForm(MenuType::class, $menu);
+		$editForm = $this->createForm(MenuType::class, $menu, $options);
 		$editForm->handleRequest($request);
 
 		if ($editForm->isSubmitted() && $editForm->isValid()) {

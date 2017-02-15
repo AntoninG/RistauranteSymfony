@@ -6,6 +6,7 @@ parameters:
 services:
     app.pager_factory:
         class: DWBD\RistauranteBundle\Services\PagerFactory
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

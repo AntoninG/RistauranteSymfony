@@ -72,7 +72,7 @@ class DishController extends Controller
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			$dish->setAuthor($user)->checkHasBeenRefusedOrValidated();
+			$dish->setAuthor($user);
 
 			$em = $this->getDoctrine()->getManager();
 			$em->persist($dish);
@@ -142,8 +142,6 @@ class DishController extends Controller
 		$editForm->handleRequest($request);
 
 		if ($editForm->isSubmitted() && $editForm->isValid()) {
-			$dish->checkHasBeenRefusedOrValidated();
-
 			try {
 				$this->getDoctrine()->getManager()->flush();
 				return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));

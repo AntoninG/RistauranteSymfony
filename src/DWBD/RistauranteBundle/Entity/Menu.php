@@ -16,53 +16,55 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Menu
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+	/**
+	 * @var int
+	 *
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="title", type="string", length=80, unique=true)
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="title", type="string", length=80, unique=true)
 	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Length(min="5", max="80")
 	 * @Assert\Type(type="string")
-     */
-    private $title;
+	 */
+	private $title;
 
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="price", type="float")
+	/**
+	 * @var float
+	 *
+	 * @ORM\Column(name="price", type="float")
 	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
-	 * @Assert\Type(type="float")
-     */
-    private $price;
+	 * @Assert\Type(type="float"),
+	 * @Assert\GreaterThan(value="0.0")
+	 * @Assert\LessThan(value="3000.0")
+	 */
+	private $price;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="displayOrder", type="integer")
+	/**
+	 * @var int
+	 *
+	 * @ORM\Column(name="displayOrder", type="integer")
 	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
-     */
-    private $displayOrder;
+	 */
+	private $displayOrder;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="state", type="integer")
+	/**
+	 * @var int
+	 *
+	 * @ORM\Column(name="state", type="integer")
 	 * @Enum({
 	 *     StateEnum::STATE_DRAFT,
 	 *     StateEnum::STATE_WAITING,
@@ -73,8 +75,15 @@ class Menu
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
-     */
-    private $state;
+	 */
+	private $state;
+
+	/**
+	 * @var boolean
+	 *
+	 * @ORM\Column(name="has_been_refused_or_validated", type="boolean")
+	 */
+	private $hasBeenRefusedOrValidated;
 
 	/**
 	 * @var User
@@ -87,181 +96,205 @@ class Menu
 	/**
 	 * @var ArrayCollection<Menu>
 	 *
-	 * @ORM\ManyToMany(targetEntity="Dish", inversedBy="menus", cascade={"persist"})
+	 * @ORM\ManyToMany(targetEntity="Dish", inversedBy="menus", cascade={"persist"}, orphanRemoval=true)
 	 * @ORM\JoinTable(name="menus_dishes")
 	 */
 	private $dishes;
 
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->dishes = new ArrayCollection();
+	}
 
-    /**
-     * Set title
-     *
-     * @param string $title
-     *
-     * @return Menu
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
+	/**
+	 * Get id
+	 *
+	 * @return int
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set title
+	 *
+	 * @param string $title
+	 *
+	 * @return Menu
+	 */
+	public function setTitle($title)
+	{
+		$this->title = $title;
 
-    /**
-     * Get title
-     *
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
+		return $this;
+	}
 
-    /**
-     * Set price
-     *
-     * @param float $price
-     *
-     * @return Menu
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
+	/**
+	 * Get title
+	 *
+	 * @return string
+	 */
+	public function getTitle()
+	{
+		return $this->title;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set price
+	 *
+	 * @param float $price
+	 *
+	 * @return Menu
+	 */
+	public function setPrice($price)
+	{
+		$this->price = $price;
 
-    /**
-     * Get price
-     *
-     * @return float
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
+		return $this;
+	}
 
-    /**
-     * Set displayOrder
-     *
-     * @param integer $displayOrder
-     *
-     * @return Menu
-     */
-    public function setDisplayOrder($displayOrder)
-    {
-        $this->displayOrder = $displayOrder;
+	/**
+	 * Get price
+	 *
+	 * @return float
+	 */
+	public function getPrice()
+	{
+		return $this->price;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set displayOrder
+	 *
+	 * @param integer $displayOrder
+	 *
+	 * @return Menu
+	 */
+	public function setDisplayOrder($displayOrder)
+	{
+		$this->displayOrder = $displayOrder;
 
-    /**
-     * Get displayOrder
-     *
-     * @return int
-     */
-    public function getDisplayOrder()
-    {
-        return $this->displayOrder;
-    }
+		return $this;
+	}
 
-    /**
-     * Set state
-     *
-     * @param integer $state
-     *
-     * @return Menu
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
+	/**
+	 * Get displayOrder
+	 *
+	 * @return int
+	 */
+	public function getDisplayOrder()
+	{
+		return $this->displayOrder;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set state
+	 *
+	 * @param integer $state
+	 *
+	 * @return Menu
+	 */
+	public function setState($state)
+	{
+		$this->state = $state;
 
-    /**
-     * Get state
-     *
-     * @return int
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->dishes = new ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set author
-     *
-     * @param User $author
-     *
-     * @return Menu
-     */
-    public function setAuthor(User $author = null)
-    {
-        $this->author = $author;
+	/**
+	 * Get state
+	 *
+	 * @return int
+	 */
+	public function getState()
+	{
+		return $this->state;
+	}
 
-        return $this;
-    }
+	/**
+	 * @return bool
+	 */
+	public function hasBeenRefusedOrValidated()
+	{
+		return $this->hasBeenRefusedOrValidated;
+	}
 
-    /**
-     * Get author
-     *
-     * @return User
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
+	/**
+	 * Check if the menu has been refused or validated
+	 * If true, put the flag hasBeenRefusedOrValidated to true
+	 *
+	 * @ORM\PrePersist()
+	 * @ORM\PreUpdate()
+	 *
+	 */
+	public function checkHasBeenRefusedOrValidated()
+	{
+		if (in_array($this->state, array(StateEnum::STATE_REFUSED, StateEnum::STATE_VALIDATED)) && !$this->hasBeenRefusedOrValidated) {
+			$this->hasBeenRefusedOrValidated = true;
+		}
+	}
 
-    /**
-     * Add dish
-     *
-     * @param Dish $dish
-     *
-     * @return Menu
-     */
-    public function addDish(Dish $dish)
-    {
-        $this->dishes[] = $dish;
+	/**
+	 * Set author
+	 *
+	 * @param User $author
+	 *
+	 * @return Menu
+	 */
+	public function setAuthor(User $author = null)
+	{
+		$this->author = $author;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove dish
-     *
-     * @param Dish $dish
-     */
-    public function removeDish(Dish $dish)
-    {
-        $this->dishes->removeElement($dish);
-    }
+	/**
+	 * Get author
+	 *
+	 * @return User
+	 */
+	public function getAuthor()
+	{
+		return $this->author;
+	}
 
-    /**
-     * Get dishes
-     *
-     * @return ArrayCollection
-     */
-    public function getDishes()
-    {
-        return $this->dishes;
-    }
+	/**
+	 * Add dish
+	 *
+	 * @param Dish $dish
+	 *
+	 * @return Menu
+	 */
+	public function addDish(Dish $dish)
+	{
+		$this->dishes[] = $dish;
+
+		return $this;
+	}
+
+	/**
+	 * Remove dish
+	 *
+	 * @param Dish $dish
+	 */
+	public function removeDish(Dish $dish)
+	{
+		$this->dishes->removeElement($dish);
+	}
+
+	/**
+	 * Get dishes
+	 *
+	 * @return ArrayCollection
+	 */
+	public function getDishes()
+	{
+		return $this->dishes;
+	}
 
 }

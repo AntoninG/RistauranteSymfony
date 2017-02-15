@@ -61,6 +61,7 @@ class Dish
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="float")
 	 * @Assert\GreaterThan(value="0.0")
+	 * @Assert\LessThan(value="300.0")
 	 */
 	private $price;
 
@@ -113,34 +114,6 @@ class Dish
 	private $temp;
 
 	/**
-	 * Sets file.
-	 *
-	 * @param UploadedFile $file
-	 */
-	public function setFile(UploadedFile $file = null)
-	{
-		$this->file = $file;
-		// check if we have an old image path
-		if (isset($this->path)) {
-			// store the old name to delete after the update
-			$this->temp = $this->path;
-			$this->path = null;
-		} else {
-			$this->path = 'initial';
-		}
-	}
-
-	/**
-	 * Get file.
-	 *
-	 * @return UploadedFile
-	 */
-	public function getFile()
-	{
-		return $this->file;
-	}
-
-	/**
 	 * @var int
 	 *
 	 * @ORM\Column(name="category", type="integer", nullable=true)
@@ -183,7 +156,7 @@ class Dish
 	/**
 	 * @var ArrayCollection<Menu>
 	 *
-	 * @ORM\ManyToMany(targetEntity="Menu", mappedBy="dishes")
+	 * @ORM\ManyToMany(targetEntity="Menu", mappedBy="dishes", orphanRemoval=true)
 	 */
 	private $menus;
 
@@ -403,42 +376,6 @@ class Dish
 	}
 
 	/**
-	 * @param ArrayCollection $menus
-	 *
-	 * @return Dish
-	 */
-	public function setMenus($menus)
-	{
-		$this->menus = $menus;
-
-		return $this;
-	}
-
-	/**
-	 * Add menu
-	 *
-	 * @param Menu $menu
-	 *
-	 * @return Dish
-	 */
-	public function addMenu(Menu $menu)
-	{
-		$this->menus[] = $menu;
-
-		return $this;
-	}
-
-	/**
-	 * Remove menu
-	 *
-	 * @param Menu $menu
-	 */
-	public function removeMenu(Menu $menu)
-	{
-		$this->menus->removeElement($menu);
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function hasBeenRefusedOrValidated()
@@ -450,16 +387,39 @@ class Dish
 	 * Check if the dish has been refused or validated
 	 * If true, put the flag hasBeenRefusedOrValidated to true
 	 *
-	 * @return boolean
+	 * @ORM\PrePersist()
+	 * @ORM\PreUpdate()
+	 *
 	 */
 	public function checkHasBeenRefusedOrValidated()
 	{
 		if (in_array($this->state, array(StateEnum::STATE_REFUSED, StateEnum::STATE_VALIDATED)) && !$this->hasBeenRefusedOrValidated) {
 			$this->hasBeenRefusedOrValidated = true;
-			return true;
 		}
+	}
 
-		return false;
+	/*
+	 *
+	 */
+
+	/**
+	 * Get file.
+	 *
+	 * @return UploadedFile
+	 */
+	public function getFile()
+	{
+		return $this->file;
+	}
+
+	/**
+	 * Set file.
+	 *
+	 * @param UploadedFile $file
+	 */
+	public function setFile(UploadedFile $file)
+	{
+		$this->file = $file;
 	}
 
 	public function getAbsolutePath()
@@ -467,13 +427,6 @@ class Dish
 		return null === $this->image
 			? null
 			: $this->getUploadRootDir() . '/' . $this->image;
-	}
-
-	public function getWebPath()
-	{
-		return null === $this->image
-			? null
-			: $this->getUploadDir() . '/' . $this->image;
 	}
 
 	protected function getUploadRootDir()
@@ -493,7 +446,6 @@ class Dish
 	public function preUpload()
 	{
 		if (null !== $this->getFile()) {
-			// do whatever you want to generate a unique name
 			$filename = sha1(uniqid(mt_rand(), true));
 			$this->image = $filename . '.' . $this->getFile()->guessExtension();
 		}
@@ -508,16 +460,13 @@ class Dish
 		if (null === $this->getFile()) {
 			return;
 		}
-		// if there is an error when moving the file, an exception will
-		// be automatically thrown by move(). This will properly prevent
-		// the entity from being persisted to the database on error
+
+		// if there is an error an exception will be thrown
 		$this->getFile()->move($this->getUploadRootDir(), $this->image);
 
 		// check if we have an old image
 		if (isset($this->temp)) {
-			// delete the old image
 			@unlink($this->getUploadRootDir() . '/' . $this->temp);
-			// clear the temp image path
 			$this->temp = null;
 		}
 		$this->file = null;
@@ -532,5 +481,5 @@ class Dish
 			@unlink($file);
 		}
 	}
-
 }
+
