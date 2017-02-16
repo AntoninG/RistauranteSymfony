@@ -5,7 +5,7 @@
     "description": "Symfony 3.2 project developed during my one year LP DWBD diploma.",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "DWBD\\": "src/"
         },
         "classmap": [
             "app/AppKernel.php",
