@@ -2,9 +2,11 @@
 
 namespace DWBD\RistauranteBundle\Entity\Listener;
 
-
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
+use Doctrine\ORM\Mapping\PostPersist;
+use Doctrine\ORM\Mapping\PostUpdate;
+use Doctrine\ORM\Mapping\PostRemove;
 use DWBD\RistauranteBundle\Entity\Dish;
 
 class DishFileListener
@@ -19,13 +21,12 @@ class DishFileListener
 	}
 
 	/**
-	 * @ORM\PrePersist()
-	 * @ORM\PreUpdate()
+	 * @PrePersist()
+	 * @PreUpdate()
 	 *
 	 * @param Dish $dish
-	 * @param LifecycleEventArgs $args
 	 */
-	public function preUpload(Dish $dish, LifecycleEventArgs $args)
+	public function preUpload(Dish $dish)
 	{
 		if (null !== $dish->getFile()) {
 			$filename = sha1(uniqid(mt_rand(), true));
@@ -34,13 +35,12 @@ class DishFileListener
 	}
 
 	/**
-	 * @ORM\PostPersist()
-	 * @ORM\PostUpdate()
+	 * @PostPersist()
+	 * @PostUpdate()
 	 *
 	 * @param Dish $dish
-	 * @param LifecycleEventArgs $args
 	 */
-	public function upload(Dish $dish, LifecycleEventArgs $args)
+	public function upload(Dish $dish)
 	{
 		if (null === $dish->getFile()) {
 			return;
@@ -58,12 +58,11 @@ class DishFileListener
 	}
 
 	/**
-	 * @ORM\PostRemove()
+	 * @PostRemove()
 	 *
 	 * @param Dish $dish
-	 * @param LifecycleEventArgs $args
 	 */
-	public function removeUpload(Dish $dish, LifecycleEventArgs $args)
+	public function removeUpload(Dish $dish)
 	{
 		if ($file = $this->getAbsolutePath($dish)) {
 			@unlink($file);

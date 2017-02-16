@@ -197,30 +197,6 @@ class DishController extends Controller
 			->getForm();
 	}
 
-	/**
-	 * Prevent the author of the dish of the refusal or validation of his dish
-	 *
-	 * @param Dish $dish
-	 */
-	private function preventAuthor(Dish $dish)
-	{
-		$message = \Swift_Message::newInstance()
-			->setSubject("Ristaurante - Your dish had a change of state")
-			->setFrom($this->getParameter("mailer_user"))
-			->setBody(
-				$this->renderView(
-					'emails/entity-state-changed.html.twig',
-					array(
-						'entityName' => 'dish',
-						'user' => $dish->getAuthor(),
-						'refuse' => $dish->getState() == StateEnum::STATE_REFUSED
-					)
-				),
-				'text/html'
-			)
-			->setTo($dish->getAuthor()->getEmail());
-
-		$this->get('mailer')->send($message);
-	}
 
 }
+

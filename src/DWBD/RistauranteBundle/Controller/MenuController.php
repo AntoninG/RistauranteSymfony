@@ -127,7 +127,6 @@ class MenuController extends Controller
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
-		$previousState = $menu->getState();
 
 		$deleteForm = $this->createDeleteForm($menu);
 		$editForm = $this->createForm(MenuType::class, $menu, array(
@@ -137,7 +136,6 @@ class MenuController extends Controller
 		$editForm->handleRequest($request);
 
 		if ($editForm->isSubmitted() && $editForm->isValid()) {
-			$newState = $menu->getState();
 			try {
 				$this->getDoctrine()->getManager()->flush();
 				return $this->redirectToRoute('menus_show', array('id' => $menu->getId()));
@@ -146,9 +144,6 @@ class MenuController extends Controller
 			} catch (\Exception $e) {
 				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
 				$this->get('logger')->err($e->getMessage());
-			}
-			if ($newState != $previousState && $menu->hasBeenRefusedOrValidated() && $menu->getAuthor()->getRoles()[0] == RoleEnum::EDITOR) {
-				$this->preventAuthor($menu);
 			}
 		}
 
@@ -196,30 +191,5 @@ class MenuController extends Controller
 			->setMethod('DELETE')
 			->getForm();
 	}
-
-	/**
-	 * Prevent the author of the dish of the refusal or validation of his dish
-	 *
-	 * @param Menu $menu
-	 */
-	private function preventAuthor(Menu $menu)
-	{
-		$message = \Swift_Message::newInstance()
-			->setSubject("Ristaurante - Your menu had a change of state")
-			->setFrom($this->getParameter("mailer_user"))
-			->setBody(
-				$this->renderView(
-					'emails/entity-state-changed.html.twig',
-					array(
-						'entityName' => 'menu',
-						'user' => $menu->getAuthor(),
-						'refuse' => $menu->getState() == StateEnum::STATE_REFUSED
-					)
-				),
-				'text/html'
-			)
-			->setTo($menu->getAuthor()->getEmail());
-
-		$this->get('mailer')->send($message);
-	}
 }
+

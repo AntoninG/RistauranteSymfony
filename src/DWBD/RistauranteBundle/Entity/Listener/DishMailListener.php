@@ -4,8 +4,8 @@ namespace DWBD\RistauranteBundle\Entity\Listener;
 
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\PostPersist;
+use Doctrine\ORM\Mapping\PostUpdate;
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\SecurityBundle\Entity\RoleEnum;
@@ -30,12 +30,11 @@ class DishMailListener
 	}
 
 	/**
-	 * @ORM\PostUpdate()
+	 * @PostUpdate()
 	 *
 	 * @param Dish $dish
-	 * @param LifecycleEventArgs $event
 	 */
-	public function preventAuthorHandler(Dish $dish, LifecycleEventArgs $event)
+	public function preventAuthorHandler(Dish $dish)
 	{
 		if ($dish->getPreviousState() != $dish->getState() && $dish->hasBeenRefusedOrValidated()) {
 			if ($dish->getAuthor()->getRoles()[0] == RoleEnum::EDITOR) {
@@ -51,8 +50,8 @@ class DishMailListener
 	}
 
 	/**
-	 * @ORM\PostPersist()
-	 * @ORM\PostUpdate()
+	 * @PostPersist()
+	 * @PostUpdate()
 	 *
 	 * @param Dish $dish
 	 * @param LifecycleEventArgs $event

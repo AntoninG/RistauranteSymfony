@@ -3,7 +3,6 @@
 namespace DWBD\RistauranteBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -29,7 +28,6 @@ class Reservation
      *
      * @ORM\Column(name="date", type="date")
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")
@@ -41,7 +39,6 @@ class Reservation
      *
      * @ORM\Column(name="time", type="time")
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")
@@ -53,7 +50,6 @@ class Reservation
      *
      * @ORM\Column(name="number", type="integer")
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
@@ -65,7 +61,6 @@ class Reservation
      *
      * @ORM\Column(name="email", type="string", length=255)
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Email()
@@ -77,7 +72,6 @@ class Reservation
      *
      * @ORM\Column(name="name", type="string", length=255)
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")
@@ -90,7 +84,6 @@ class Reservation
      *
      * @ORM\Column(name="phone", type="string", length=16)
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")

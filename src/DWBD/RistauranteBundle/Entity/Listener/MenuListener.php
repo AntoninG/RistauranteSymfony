@@ -4,6 +4,8 @@ namespace DWBD\RistauranteBundle\Entity\Listener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Mapping\PostPersist;
+use Doctrine\ORM\Mapping\PostUpdate;
 use DWBD\RistauranteBundle\Entity\Menu;
 use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\SecurityBundle\Entity\RoleEnum;
@@ -28,12 +30,11 @@ class MenuListener
 	}
 
 	/**
-	 * @ORM\PostUpdate()
+	 * @PostUpdate()
 	 *
 	 * @param Menu $menu
-	 * @param LifecycleEventArgs $event
 	 */
-	public function preventAuthorHandler(Menu $menu, LifecycleEventArgs $event)
+	public function preventAuthorHandler(Menu $menu)
 	{
 		if ($menu->getPreviousState() != $menu->getState() && $menu->hasBeenRefusedOrValidated()) {
 			if ($menu->getAuthor()->getRoles()[0] == RoleEnum::EDITOR) {
@@ -49,8 +50,8 @@ class MenuListener
 	}
 
 	/**
-	 * @ORM\PostPersist()
-	 * @ORM\PostUpdate()
+	 * @PostPersist()
+	 * @PostUpdate()
 	 *
 	 * @param Menu $menu
 	 * @param LifecycleEventArgs $event

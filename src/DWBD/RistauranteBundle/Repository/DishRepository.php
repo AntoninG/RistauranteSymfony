@@ -3,7 +3,6 @@
 namespace DWBD\RistauranteBundle\Repository;
 
 use \Doctrine\ORM\EntityRepository;
-use \Doctrine\DBAL\Exception\InvalidArgumentException;
 
 /**
  * DishRepository
