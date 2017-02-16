@@ -3,7 +3,6 @@
 namespace DWBD\RistauranteBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
@@ -15,6 +14,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="dish")
  * @ORM\Entity(repositoryClass="DWBD\RistauranteBundle\Repository\DishRepository")
+ * @ORM\EntityListeners({
+ *     "DWBD\RistauranteBundle\Entity\Listener\DishFileListener",
+ *     "DWBD\RistauranteBundle\Entity\Listener\DishMailListener"
+ * })
  * @ORM\HasLifecycleCallbacks()
  */
 class Dish
@@ -33,7 +36,6 @@ class Dish
 	 *
 	 * @ORM\Column(name="title", type="string", length=80, unique=true)
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Length(min="5", max="80")
@@ -56,7 +58,6 @@ class Dish
 	 *
 	 * @ORM\Column(name="price", type="float")
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="float")
@@ -76,7 +77,6 @@ class Dish
 	 *     StateEnum::STATE_VALIDATED
 	 * })
 	 *
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
@@ -110,8 +110,11 @@ class Dish
 	 */
 	private $file;
 
-	/** @var  string */
+	/** @var string */
 	private $temp;
+
+	/** @var int  */
+	private $previousState;
 
 	/**
 	 * @var int
@@ -167,6 +170,7 @@ class Dish
 	{
 		$this->menus = new ArrayCollection();
 		$this->hasBeenRefusedOrValidated = false;
+		$this->temp = null;
 	}
 
 	/**
@@ -260,6 +264,7 @@ class Dish
 	 */
 	public function setState($state)
 	{
+		$this->previousState = isset($this->state) ? $this->state : null;
 		$this->state = $state;
 
 		return $this;
@@ -273,6 +278,16 @@ class Dish
 	public function getState()
 	{
 		return $this->state;
+	}
+
+	/**
+	 * Get previous state
+	 *
+	 * @return int
+	 */
+	public function getPreviousState()
+	{
+		return $this->previousState;
 	}
 
 	/**
@@ -398,10 +413,6 @@ class Dish
 		}
 	}
 
-	/*
-	 *
-	 */
-
 	/**
 	 * Get file.
 	 *
@@ -415,71 +426,38 @@ class Dish
 	/**
 	 * Set file.
 	 *
-	 * @param UploadedFile $file
+	 * @param UploadedFile|null $file
 	 */
-	public function setFile(UploadedFile $file)
+	public function setFile($file)
 	{
 		$this->file = $file;
-	}
-
-	public function getAbsolutePath()
-	{
-		return null === $this->image
-			? null
-			: $this->getUploadRootDir() . '/' . $this->image;
-	}
-
-	protected function getUploadRootDir()
-	{
-		return __DIR__ . '/../../../../web/' . $this->getUploadDir();
-	}
-
-	protected function getUploadDir()
-	{
-		return 'img/dishes';
-	}
-
-	/**
-	 * @ORM\PrePersist()
-	 * @ORM\PreUpdate()
-	 */
-	public function preUpload()
-	{
-		if (null !== $this->getFile()) {
-			$filename = sha1(uniqid(mt_rand(), true));
-			$this->image = $filename . '.' . $this->getFile()->guessExtension();
+		// check if we have an old image path
+		if (isset($this->image)) {
+			// store the old name to delete after the update
+			$this->temp = $this->image;
+			$this->image = null;
+		} else {
+			$this->image = 'initial';
 		}
 	}
 
 	/**
-	 * @ORM\PostPersist()
-	 * @ORM\PostUpdate()
+	 * @return string
 	 */
-	public function upload()
+	public function getTemp()
 	{
-		if (null === $this->getFile()) {
-			return;
-		}
-
-		// if there is an error an exception will be thrown
-		$this->getFile()->move($this->getUploadRootDir(), $this->image);
-
-		// check if we have an old image
-		if (isset($this->temp)) {
-			@unlink($this->getUploadRootDir() . '/' . $this->temp);
-			$this->temp = null;
-		}
-		$this->file = null;
+		return $this->temp;
 	}
 
 	/**
-	 * @ORM\PostRemove()
+	 * @param string $temp
+	 * @return Dish
 	 */
-	public function removeUpload()
+	public function setTemp($temp)
 	{
-		if ($file = $this->getAbsolutePath()) {
-			@unlink($file);
-		}
+		$this->temp = $temp;
+		return $this;
 	}
+
 }
 

@@ -1,0 +1,9 @@
+<h3>Hi {{ user.username }}</h3>
+
+{% if refused %}
+    <p>Bad news, your {{ entityName }} <i>{{ title }}</i> has been refused. Sorry about that.</p>
+{% else %}
+    <p>Good news, your {{ entityName }} <i>{{ title }}</i> has been validated!</p>
+{% endif %}
+
+<p>Bests</p>

@@ -23,8 +23,26 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
 			->getOneOrNullResult();
 	}
 
-	public function totalRowCount()
+	/**
+	 * @param array|string $roles
+	 *
+	 * @return  array
+	 */
+	public function findByRoles($roles)
 	{
-		return count($this->createQueryBuilder('u')->getQuery()->getScalarResult());
+		if (!is_string($roles) && !is_array($roles)) {
+			throw new \InvalidArgumentException('$roles must be an array or a string');
+		}
+
+		$qb = $this->createQueryBuilder('u');
+		if (is_string($roles)) {
+			$qb->where($qb->expr()->like('u.roles', ':roles'))->setParameter('roles', '%"' . $roles . '"%');
+		} else {
+			foreach ($roles as $role) {
+				$qb->orWhere($qb->expr()->like('u.roles', ':roles'))->setParameter('roles', '%"' . $role . '"%');
+			}
+		}
+
+		return $qb->getQuery()->getResult();
 	}
 }

@@ -7,6 +7,23 @@ services:
     app.pager_factory:
         class: DWBD\RistauranteBundle\Services\PagerFactory
 
+    app.dish_file_listener:
+        class: DWBD\RistauranteBundle\Entity\Listener\DishFileListener
+        arguments: ['%dishes_directory%']
+        tags:
+            - { name: doctrine.orm.entity_listener }
+
+    app.dish_mail_listener:
+        class: DWBD\RistauranteBundle\Entity\Listener\DishMailListener
+        arguments: ['@twig', '@swiftmailer.mailer', '%mailer_user%']
+        tags:
+            - { name: doctrine.orm.entity_listener }
+
+    app.menu_mail_listener:
+            class: DWBD\RistauranteBundle\Entity\Listener\MenuListener
+            arguments: ['@twig', '@swiftmailer.mailer', '%mailer_user%']
+            tags:
+                - { name: doctrine.orm.entity_listener }
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

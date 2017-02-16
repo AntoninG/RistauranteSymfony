@@ -6,7 +6,6 @@ namespace DWBD\RistauranteBundle\Command;
 use Doctrine\ORM\Query\QueryException;
 use DWBD\SecurityBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -42,48 +41,52 @@ class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 			$output->writeln('No menus without dishes. End of task.');
 			return;
 		} else {
-			$output->writeln(count($menus)." menus found");
+			$output->writeln(count($menus) . " menus found");
 		}
 
 		// We need to retrieve the admin users
-		try  {
-			$userRep = $this->getContainer()->get("doctrine")->getManager()->getRepository("DWBDSecurityBundle:User");
-			$admins	 = $userRep->findByRole("ROLE_ADMIN");
-			$chiefs	 = $userRep->findByRole("ROLE_CHIEF");
-
-			if (!empty($admins) || !empty($chiefs)) {
-				$output->writeln("Mails will be send to administrators and chiefs");
-				$recipients = array_merge($admins, $chiefs);
-				$chunk = array_chunk($recipients, 10);
-
-				foreach ($chunk as $array) {
-					$emails = array_map(function(User $user) {
-						return $user->getEmail();
-					}, $array);
-
-					$message = \Swift_Message::newInstance()
-						->setSubject("[INFO] - Ristaurante - Menus without dishes")
-						->setFrom($this->getContainer()->getParameter("mailer_user"))
-						->setBody(
-							$this->getContainer()->get("templating")->render(
-								'emails/check-menus.html.twig',
-								array('menus' => $menus)
-							),
-							'text/html'
-						)
-						->setTo($emails);
-
-					$this->getContainer()->get("mailer")->send($message);
-				}
-			} else {
-				$output->writeln('None administrators to contact, here are the menus concerned :');
-				foreach ($menus as $menu) {
-					$output->writeln($menu->getId().' : '.$menu->getTitle().' (by '.$menu->getAuthor()->getLogin().')');
-				}
-			}
-		}catch (QueryException $e) {
+		$userRep = $this->getContainer()->get("doctrine")->getManager()->getRepository("DWBDSecurityBundle:User");
+		try {
+			$admins = $userRep->findByRoles(array("ROLE_CHIEF", "ROLE_ADMIN"));
+		} catch (\Exception $e) {
 			$output->writeln($e->getMessage());
+			$this->getContainer()->get('logger')->error($e->getMessage());
+			$admins = array();
+		}
+
+		if (empty($admins)) {
+			$output->writeln('None administrators to contact, here are the menus concerned :');
+			foreach ($menus as $menu) {
+				$output->writeln($menu->getId() . ' : ' . $menu->getTitle() . ' (by ' . $menu->getAuthor()->getUsername() . ')');
+			}
 			return;
 		}
+
+		$output->writeln("Mails will be send to administrators and chiefs (" . (count($admins)/* + count($chiefs)*/) . ")");
+		$chunk = array_chunk($admins, 10);
+
+		$sent = 0;
+		foreach ($chunk as $array) {
+			$emails = array_map(function (User $user) {
+				return $user->getEmail();
+			}, $array);
+
+			$message = \Swift_Message::newInstance()
+				->setSubject("[INFO] - Ristaurante - Menus without dishes")
+				->setFrom($this->getContainer()->getParameter("mailer_user"))
+				->setBody(
+					$this->getContainer()->get("templating")->render(
+						'emails/check-menus.html.twig',
+						array('menus' => $menus)
+					),
+					'text/html'
+				)
+				->setTo($emails);
+
+			$this->getContainer()->get("mailer")->send($message);
+			++$sent;
+		}
+
+		$output->writeln($sent . ' mails sent');
 	}
 }

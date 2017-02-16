@@ -101,6 +101,9 @@ class Menu
 	 */
 	private $dishes;
 
+	/** @var int  */
+	private $previousState;
+
 
 	/**
 	 * Constructor
@@ -201,6 +204,7 @@ class Menu
 	 */
 	public function setState($state)
 	{
+		$this->previousState = isset($this->state) ? $this->state : null;
 		$this->state = $state;
 
 		return $this;
@@ -214,6 +218,16 @@ class Menu
 	public function getState()
 	{
 		return $this->state;
+	}
+
+	/**
+	 * Get previous state
+	 *
+	 * @return int
+	 */
+	public function getPreviousState()
+	{
+		return $this->previousState;
 	}
 
 	/**

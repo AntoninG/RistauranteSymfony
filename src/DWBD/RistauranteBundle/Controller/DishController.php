@@ -83,6 +83,7 @@ class DishController extends Controller
 			} catch (UniqueConstraintViolationException $violationException) {
 				$this->addFlash('danger', 'The title you choose is already used.');
 			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
 				$this->get('logger')->err($e->getMessage());
 			}
 		}
@@ -132,12 +133,9 @@ class DishController extends Controller
 	{
 		$user = $this->get("security.token_storage")->getToken()->getUser();
 		$isEditor = $user->getRoles()[0] == RoleEnum::EDITOR;
-		$options = array(
-			'isEditor' => $isEditor,
-			'refusedOrValidated' => $dish->hasBeenRefusedOrValidated()
-		);
 
 		$deleteForm = $this->createDeleteForm($dish);
+		$options = array('isEditor' => $isEditor, 'refusedOrValidated' => $dish->hasBeenRefusedOrValidated());
 		$editForm = $this->createForm(DishType::class, $dish, $options);
 		$editForm->handleRequest($request);
 
@@ -147,6 +145,9 @@ class DishController extends Controller
 				return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
 			} catch (UniqueConstraintViolationException $exception) {
 				$this->addFlash('danger', 'The title you choose is already used.');
+			} catch (\Exception $e) {
+				$this->addFlash('danger', 'An error occurred during creation. Please contact your administrator');
+				$this->get('logger')->err($e->getMessage());
 			}
 		}
 
@@ -194,6 +195,32 @@ class DishController extends Controller
 			->setAction($this->generateUrl('dishes_delete', array('id' => $dish->getId())))
 			->setMethod('DELETE')
 			->getForm();
+	}
+
+	/**
+	 * Prevent the author of the dish of the refusal or validation of his dish
+	 *
+	 * @param Dish $dish
+	 */
+	private function preventAuthor(Dish $dish)
+	{
+		$message = \Swift_Message::newInstance()
+			->setSubject("Ristaurante - Your dish had a change of state")
+			->setFrom($this->getParameter("mailer_user"))
+			->setBody(
+				$this->renderView(
+					'emails/entity-state-changed.html.twig',
+					array(
+						'entityName' => 'dish',
+						'user' => $dish->getAuthor(),
+						'refuse' => $dish->getState() == StateEnum::STATE_REFUSED
+					)
+				),
+				'text/html'
+			)
+			->setTo($dish->getAuthor()->getEmail());
+
+		$this->get('mailer')->send($message);
 	}
 
 }

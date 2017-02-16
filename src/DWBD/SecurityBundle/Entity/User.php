@@ -3,7 +3,6 @@
 namespace DWBD\SecurityBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\RistauranteBundle\Entity\Dish;
@@ -19,21 +18,20 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User implements UserInterface, \Serializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="username", type="string", length=60, unique=true)
+	/**
+	 * @var int
 	 *
-	 * @Required()
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="username", type="string", length=60, unique=true)
+	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")
@@ -41,15 +39,14 @@ class User implements UserInterface, \Serializable
 	 *     min=5,
 	 *     max=60
 	 * )
-     */
-    private $username;
+	 */
+	private $username;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=72)
+	/**
+	 * @var string
 	 *
-	 * @Required()
+	 * @ORM\Column(name="password", type="string", length=72)
+	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="string")
@@ -57,20 +54,19 @@ class User implements UserInterface, \Serializable
 	 *     min="8",
 	 *     max="72"
 	 * )
-     */
-    private $password;
+	 */
+	private $password;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="email", type="string", length=255, unique=true)
+	/**
+	 * @var string
 	 *
-	 * @Required()
+	 * @ORM\Column(name="email", type="string", length=255, unique=true)
+	 *
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Email()
-     */
-    private $email;
+	 */
+	private $email;
 
 	/**
 	 * @var array
@@ -82,127 +78,126 @@ class User implements UserInterface, \Serializable
 	 * )
 	 *
 	 * @Enum({RoleEnum::USER, RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN})
-	 * @Required()
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 */
-    private $roles;
+	private $roles;
 
 	/**
 	 * @var string
 	 *
 	 * @ORM\Column(name="salt", type="string", length=255)
 	 */
-    private $salt;
+	private $salt;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="isActive", type="boolean")
-     */
-    private $isActive;
+	/**
+	 * @var bool
+	 *
+	 * @ORM\Column(name="isActive", type="boolean")
+	 */
+	private $isActive;
 
 	/**
 	 * @var ArrayCollection<Dish>
 	 *
-	 * @ORM\OneToMany(targetEntity="DWBD\RistauranteBundle\Entity\Dish", mappedBy="author", cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="DWBD\RistauranteBundle\Entity\Dish", mappedBy="author", cascade={"persist"}, orphanRemoval=true)
 	 */
-    private $dishes;
+	private $dishes;
 
 	/**
 	 * @var ArrayCollection<Menu>
 	 *
-	 * @ORM\OneToMany(targetEntity="DWBD\RistauranteBundle\Entity\Menu", mappedBy="author", cascade={"persist"})
+	 * @ORM\OneToMany(targetEntity="DWBD\RistauranteBundle\Entity\Menu", mappedBy="author", cascade={"persist"}, orphanRemoval=true)
 	 */
-    private $menus;
+	private $menus;
 
-    public function __construct()
+	public function __construct()
 	{
 		$this->isActive = true;
 		$this->salt = md5(uniqid(null, true));
 	}
 
 	/**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	 * Get id
+	 *
+	 * @return int
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
-    /**
-     * Set username
-     *
-     * @param string $username
-     *
-     * @return User
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
+	/**
+	 * Set username
+	 *
+	 * @param string $username
+	 *
+	 * @return User
+	 */
+	public function setUsername($username)
+	{
+		$this->username = $username;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get username
-     *
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
+	/**
+	 * Get username
+	 *
+	 * @return string
+	 */
+	public function getUsername()
+	{
+		return $this->username;
+	}
 
-    /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
+	/**
+	 * Set password
+	 *
+	 * @param string $password
+	 *
+	 * @return User
+	 */
+	public function setPassword($password)
+	{
+		$this->password = $password;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get password
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
+	/**
+	 * Get password
+	 *
+	 * @return string
+	 */
+	public function getPassword()
+	{
+		return $this->password;
+	}
 
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return User
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
+	/**
+	 * Set email
+	 *
+	 * @param string $email
+	 *
+	 * @return User
+	 */
+	public function setEmail($email)
+	{
+		$this->email = $email;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
+	/**
+	 * Get email
+	 *
+	 * @return string
+	 */
+	public function getEmail()
+	{
+		return $this->email;
+	}
 
 	/**
 	 * @return bool
@@ -221,7 +216,6 @@ class User implements UserInterface, \Serializable
 		$this->isActive = $isActive;
 		return $this;
 	}
-
 
 
 	/**
@@ -352,7 +346,7 @@ class User implements UserInterface, \Serializable
 			$this->username,
 			$this->password,
 			$this->salt
-		) = unserialize($serialized);
+			) = unserialize($serialized);
 	}
 }
 
