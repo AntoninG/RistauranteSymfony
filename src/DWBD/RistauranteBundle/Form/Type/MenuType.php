@@ -4,7 +4,7 @@ namespace DWBD\RistauranteBundle\Form\Type;
 
 use DWBD\RistauranteBundle\Entity\Dish;
 use DWBD\RistauranteBundle\Entity\Menu;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use DWBD\RistauranteBundle\Repository\DishRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -15,6 +15,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class MenuType
+ * @package DWBD\RistauranteBundle\Form\Type
+ */
 class MenuType extends AbstractType
 {
 	/**

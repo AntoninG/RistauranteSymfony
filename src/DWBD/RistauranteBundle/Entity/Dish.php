@@ -6,6 +6,8 @@ use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\CategoryEnum;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -113,7 +115,7 @@ class Dish
 	/** @var string */
 	private $temp;
 
-	/** @var int  */
+	/** @var int */
 	private $previousState;
 
 	/**
@@ -256,7 +258,8 @@ class Dish
 	}
 
 	/**
-	 * Set state
+	 * Set state.
+	 * Store the previous state in $this->previousState
 	 *
 	 * @param integer $state
 	 *
@@ -425,6 +428,7 @@ class Dish
 
 	/**
 	 * Set file.
+	 * Store the old image in $this->temp in order to delete it later.
 	 *
 	 * @param UploadedFile|null $file
 	 */

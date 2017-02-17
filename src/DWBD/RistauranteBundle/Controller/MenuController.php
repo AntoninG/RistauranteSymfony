@@ -3,16 +3,19 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use DWBD\RistauranteBundle\Entity\CategoryEnum;
+use DWBD\RistauranteBundle\Entity\Enum\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Menu;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use DWBD\RistauranteBundle\Form\Type\MenuType;
-use DWBD\SecurityBundle\Entity\RoleEnum;
+use DWBD\SecurityBundle\Entity\Enum\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Menu controller.
@@ -27,6 +30,10 @@ class MenuController extends Controller
 	 * @Route("/index", name="menus_index")
 	 * @Method("GET")
 	 * @Security("has_role('ROLE_WAITER')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function indexAction(Request $request)
 	{
@@ -61,6 +68,10 @@ class MenuController extends Controller
 	 * @Route("/new", name="menus_new")
 	 * @Method({"GET", "POST"})
 	 * @Security("has_role('ROLE_EDITOR')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function newAction(Request $request)
 	{
@@ -77,7 +88,7 @@ class MenuController extends Controller
 			$em->persist($menu);
 
 			try {
-				$em->flush($menu);
+				$em->flush();
 				return $this->redirectToRoute('menus_show', array('id' => $menu->getId()));
 			} catch (UniqueConstraintViolationException $violationException) {
 				$this->addFlash('danger', 'The title you choose is already used.');
@@ -98,9 +109,13 @@ class MenuController extends Controller
 	/**
 	 * Finds and displays a menu entity.
 	 *
-	 * @Route("/show/{id}", name="menus_show")
+	 * @Route("/show/{id}", name="menus_show", requirements={"id": "\d+"})
 	 * @Method("GET")
 	 * @Security("has_role('ROLE_WAITER')")
+	 *
+	 * @param Menu $menu
+	 *
+	 * @return Response
 	 */
 	public function showAction(Menu $menu)
 	{
@@ -119,9 +134,14 @@ class MenuController extends Controller
 	/**
 	 * Displays a form to edit an existing menu entity.
 	 *
-	 * @Route("/edit/{id}", name="menus_edit")
+	 * @Route("/edit/{id}", name="menus_edit", requirements={"id": "\d+"})
 	 * @Method({"GET", "POST"})
 	 * @Security("has_role('ROLE_EDITOR')")
+	 *
+	 * @param Request $request
+	 * @param Menu $menu
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function editAction(Request $request, Menu $menu)
 	{
@@ -159,9 +179,14 @@ class MenuController extends Controller
 	/**
 	 * Deletes a menu entity.
 	 *
-	 * @Route("/delete/{id}", name="menus_delete")
+	 * @Route("/delete/{id}", name="menus_delete", requirements={"id": "\d+"})
 	 * @Method("DELETE")
 	 * @Security("has_role('ROLE_CHIEF')")
+	 *
+	 * @param Request $request
+	 * @param Menu $menu
+	 *
+	 * @return RedirectResponse
 	 */
 	public function deleteAction(Request $request, Menu $menu)
 	{
@@ -171,7 +196,7 @@ class MenuController extends Controller
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->getDoctrine()->getManager();
 			$em->remove($menu);
-			$em->flush($menu);
+			$em->flush();
 		}
 
 		return $this->redirectToRoute('menus_index');
@@ -182,7 +207,7 @@ class MenuController extends Controller
 	 *
 	 * @param Menu $menu The menu entity
 	 *
-	 * @return \Symfony\Component\Form\Form The form
+	 * @return Form The form
 	 */
 	private function createDeleteForm(Menu $menu)
 	{

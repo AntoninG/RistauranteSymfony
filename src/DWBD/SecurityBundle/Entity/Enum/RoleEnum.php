@@ -1,6 +1,6 @@
 <?php
 
-namespace DWBD\SecurityBundle\Entity;
+namespace DWBD\SecurityBundle\Entity\Enum;
 
 /**
  * Class RoleEnum

@@ -2,6 +2,10 @@
 
 namespace DWBD\RistauranteBundle\Services;
 
+/**
+ * Class Pager
+ * @package DWBD\RistauranteBundle\Services
+ */
 class Pager
 {
 	/** @var array */
@@ -66,6 +70,8 @@ class Pager
 	}
 
 	/**
+	 * Return all entities on the page given in constructor
+	 *
 	 * @return array
 	 */
 	public function getEntities()
@@ -192,6 +198,8 @@ class Pager
 	}
 
 	/**
+	 * Returns the start offset of the page
+	 *
 	 * @return int
 	 */
 	public function getOffsetStart()
@@ -200,6 +208,8 @@ class Pager
 	}
 
 	/**
+	 * Returns the end offset of the page
+	 *
 	 * @return int
 	 */
 	public function getOffsetEnd()
@@ -208,7 +218,10 @@ class Pager
 	}
 
 	/**
+	 * Returns a formatted string with the start and end offsets on total entries
+	 *
 	 * @return string
+	 * 		{start} to {end} / {total} entries
 	 */
 	public function getFormattedOffsets()
 	{

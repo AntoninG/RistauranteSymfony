@@ -46,7 +46,7 @@
                         {% if app.user and is_granted('ROLE_CHIEF') %}
                             <a href="{{ url('reservations_index') }}"><i class="fa fa-calendar" aria-hidden="true"></i>
                                 Reservations</a>
-                        {% elseif app.user is not defined %}
+                        {% elseif is_granted('IS_AUTHENTICATED_ANONYMOUSLY') %}
                             <a href="{{ url('reservations_new') }}"><i class="fa fa-calendar" aria-hidden="true"></i>
                                 Reservations</a>
                         {% endif %}

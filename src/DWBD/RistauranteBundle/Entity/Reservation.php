@@ -4,6 +4,7 @@ namespace DWBD\RistauranteBundle\Entity;
 
 use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\ORM\Mapping as ORM;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -94,7 +95,7 @@ class Reservation
 	/**
 	 * @var integer
 	 *
-	 * @ORM\Column(name="state", type="boolean")
+	 * @ORM\Column(name="state", type="integer")
 	 * @Enum({
 	 *     StateEnum::STATE_WAITING,
 	 *     StateEnum::STATE_REFUSED,

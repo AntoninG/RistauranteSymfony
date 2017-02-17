@@ -5,6 +5,13 @@ namespace DWBD\SecurityBundle\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+/**
+ * Class StringToArrayUserTransformer
+ * Allows to transform an array of roles into a string usable in a select tag
+ * Uses only the first roles
+ *
+ * @package DWBD\SecurityBundle\Form\DataTransformer
+ */
 class StringToArrayUserTransformer implements DataTransformerInterface
 {
 	/**

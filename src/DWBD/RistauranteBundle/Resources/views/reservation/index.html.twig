@@ -112,6 +112,9 @@
 							500: function () {
 								alert('An error occurred during the process. The reservation was not modified.');
 							},
+							404: function () {
+								alert('Unable to find this reservation.');
+							},
 							200: function () {
 								var tr = _this.parents('tr')[0];
 								tr.remove();

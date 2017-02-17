@@ -2,7 +2,7 @@
 
 namespace DWBD\SecurityBundle\Form\Type;
 
-use DWBD\SecurityBundle\Entity\RoleEnum;
+use DWBD\SecurityBundle\Entity\Enum\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;
 use DWBD\SecurityBundle\Form\DataTransformer\StringToArrayUserTransformer;
 use Symfony\Component\Form\AbstractType;

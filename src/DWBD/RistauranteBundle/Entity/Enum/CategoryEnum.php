@@ -1,7 +1,13 @@
 <?php
 
-namespace DWBD\RistauranteBundle\Entity;
+namespace DWBD\RistauranteBundle\Entity\Enum;
 
+/**
+ * Class CategoryEnum
+ * Represents a category of dish
+ *
+ * @package DWBD\RistauranteBundle\Entity\Enum
+ */
 abstract class CategoryEnum
 {
 	CONST ENTREE = 1;
@@ -11,6 +17,8 @@ abstract class CategoryEnum
 	CONST APPETIZER = 5;
 
 	/**
+	 * Returns an array used in forms
+	 *
 	 * @return array
 	 *        id => translation
 	 */
@@ -26,6 +34,8 @@ abstract class CategoryEnum
 	}
 
 	/**
+	 * Returns and array with all categories
+	 *
 	 * @return array
 	 */
 	public static function getCategories()
@@ -39,6 +49,12 @@ abstract class CategoryEnum
 		);
 	}
 
+	/**
+	 * Returns an array used to translate categories
+	 *
+	 * @return array
+	 *        id => translation
+	 */
 	public static function getCategoriesTranslation()
 	{
 		return array(

@@ -9,7 +9,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Form;
 
 /**
  * User controller.
@@ -24,6 +27,9 @@ class UserController extends Controller
 	 *
 	 * @Route("/index", name="user_index")
 	 * @Method("GET")
+	 *
+	 * @param Request $request
+	 * @return Response
 	 */
 	public function indexAction(Request $request)
 	{
@@ -47,6 +53,9 @@ class UserController extends Controller
 	 *
 	 * @Route("/new", name="user_new")
 	 * @Method({"GET", "POST"})
+	 *
+	 * @param Request $request
+	 * @return Response|RedirectResponse
 	 */
 	public function newAction(Request $request)
 	{
@@ -62,7 +71,7 @@ class UserController extends Controller
 			$em->persist($user);
 
 			try {
-				$em->flush($user);
+				$em->flush();
 				return $this->redirectToRoute('user_show', array('id' => $user->getId()));
 			} catch (UniqueConstraintViolationException $exception) {
 				$this->addFlash('danger', 'The email or login you tried are already used');
@@ -84,8 +93,11 @@ class UserController extends Controller
 	/**
 	 * Finds and displays a user entity.
 	 *
-	 * @Route("/{id}", name="user_show")
+	 * @Route("/{id}", name="user_show", requirements={"id": "\d+"})
 	 * @Method("GET")
+	 *
+	 * @param User $user
+	 * @return Response
 	 */
 	public function showAction(User $user)
 	{
@@ -102,8 +114,13 @@ class UserController extends Controller
 	/**
 	 * Displays a form to edit an existing user entity.
 	 *
-	 * @Route("/edit/{id}", name="user_edit")
+	 * @Route("/edit/{id}", name="user_edit", requirements={"id": "\d+"})
 	 * @Method({"GET", "POST"})
+	 *
+	 * @param Request $request
+	 * @param User $user
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function editAction(Request $request, User $user)
 	{
@@ -139,8 +156,13 @@ class UserController extends Controller
 	/**
 	 * Deletes a user entity.
 	 *
-	 * @Route("/delete/{id}", name="user_delete")
+	 * @Route("/delete/{id}", name="user_delete", requirements={"id": "\d+"})
 	 * @Method({"DELETE", "GET"})
+	 *
+	 * @param Request $request
+	 * @param User $user
+	 *
+	 * @return RedirectResponse
 	 */
 	public function deleteAction(Request $request, User $user)
 	{
@@ -150,7 +172,7 @@ class UserController extends Controller
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->getDoctrine()->getManager();
 			$em->remove($user);
-			$em->flush($user);
+			$em->flush();
 		}
 
 		return $this->redirectToRoute('user_index');
@@ -161,7 +183,7 @@ class UserController extends Controller
 	 *
 	 * @param User $user The user entity
 	 *
-	 * @return \Symfony\Component\Form\Form The form
+	 * @return Form The form
 	 */
 	private function createDeleteForm(User $user)
 	{

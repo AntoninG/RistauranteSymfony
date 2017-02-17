@@ -8,10 +8,17 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\PostPersist;
 use Doctrine\ORM\Mapping\PostUpdate;
 use DWBD\RistauranteBundle\Entity\Dish;
-use DWBD\RistauranteBundle\Entity\StateEnum;
-use DWBD\SecurityBundle\Entity\RoleEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
+use DWBD\SecurityBundle\Entity\Enum\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;
 
+/**
+ * Class DishMailListener
+ * This is an EntityListener for Dish entity
+ * It manages all mails related to the dish
+ *
+ * @package DWBD\RistauranteBundle\Entity\Listener
+ */
 class DishMailListener
 {
 	/** @var \Swift_Mailer */
@@ -23,6 +30,13 @@ class DishMailListener
 	/** @var  string */
 	private $mailerUser;
 
+	/**
+	 * DishMailListener constructor.
+	 *
+	 * @param \Twig_Environment $twig
+	 * @param \Swift_Mailer $mailer
+	 * @param $mailerUser
+	 */
 	public function __construct(\Twig_Environment $twig, \Swift_Mailer $mailer, $mailerUser)
 	{
 		$this->mailer = $mailer;
@@ -127,11 +141,15 @@ class DishMailListener
 	}
 
 	/**
+	 * Generate a mail base on parameters
+	 *
 	 * @param string $view
 	 * @param Dish $dish
 	 * @param string $subject
 	 * @param string $user
 	 * @param string|array $recipient
+	 *
+	 * @return \Swift_Message
 	 */
 	private function generateMail($view, Dish $dish, $subject, $user, $recipient)
 	{

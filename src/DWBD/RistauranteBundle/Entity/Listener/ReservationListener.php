@@ -5,8 +5,15 @@ namespace DWBD\RistauranteBundle\Entity\Listener;
 
 use Doctrine\ORM\Mapping\PostUpdate;
 use DWBD\RistauranteBundle\Entity\Reservation;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 
+/**
+ * Class ReservationListener
+ * This is an EntityListener for Reservation entity
+ * It manages all mails related to the reservation
+ *
+ * @package DWBD\RistauranteBundle\Entity\Listener
+ */
 class ReservationListener
 {
 	/** @var \Swift_Mailer */
@@ -18,6 +25,13 @@ class ReservationListener
 	/** @var  string */
 	private $mailerUser;
 
+	/**
+	 * ReservationListener constructor.
+	 *
+	 * @param \Twig_Environment $twig
+	 * @param \Swift_Mailer $mailer
+	 * @param $mailerUser
+	 */
 	public function __construct(\Twig_Environment $twig, \Swift_Mailer $mailer, $mailerUser)
 	{
 		$this->mailer = $mailer;

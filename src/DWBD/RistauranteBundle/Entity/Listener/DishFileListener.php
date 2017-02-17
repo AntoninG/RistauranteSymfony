@@ -9,11 +9,24 @@ use Doctrine\ORM\Mapping\PostUpdate;
 use Doctrine\ORM\Mapping\PostRemove;
 use DWBD\RistauranteBundle\Entity\Dish;
 
+/**
+ * Class DishFileListener
+ * This is an EntityListener for Dish entity
+ * It manages all things related to the file of the dish
+ *
+ * @package DWBD\RistauranteBundle\Entity\Listener
+ */
 class DishFileListener
 {
 	/** @var  string */
 	private $dishesDirectory;
 
+	/**
+	 * DishFileListener constructor.
+	 *
+	 * @param $dishesDirectory
+	 * 		The directory where the dishes images must be stored
+	 */
 	public function __construct($dishesDirectory)
 	{
 

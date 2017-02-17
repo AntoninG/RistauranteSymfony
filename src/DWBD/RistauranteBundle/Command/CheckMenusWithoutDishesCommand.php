@@ -9,6 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class CheckMenusWithoutDishesCommand
+ * Search in the database, all menus without any dishes
+ * In case of result, a mail is sent to all chiefs and administrators to prevent them
+ *
+ * @package DWBD\RistauranteBundle\Command
+ */
 class CheckMenusWithoutDishesCommand extends ContainerAwareCommand
 {
 	protected function configure()

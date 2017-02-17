@@ -3,13 +3,16 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Reservation;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use DWBD\RistauranteBundle\Form\Type\ReservationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use \Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Reservation controller.
@@ -23,8 +26,11 @@ class ReservationController extends Controller
 	 *
 	 * @Route("/index", name="reservations_index")
 	 * @Method("GET")
-	 *
 	 * @Security("has_role('ROLE_CHIEF')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function indexAction(Request $request)
 	{
@@ -49,14 +55,14 @@ class ReservationController extends Controller
 	 *
 	 * @Route("/new", name="reservations_new")
 	 * @Method({"GET", "POST"})
+	 * @Security("has_role('IS_AUTHENTICATED_FULLY')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function newAction(Request $request)
 	{
-		$securityContext = $this->get('security.authorization_checker');
-		if ($securityContext->isGranted('IS_AUTHENTICATED_FULLY')) {
-			throw $this->createAccessDeniedException();
-		}
-
 		$reservation = new Reservation();
 		$form = $this->createForm(ReservationType::class, $reservation);
 		$form->handleRequest($request);
@@ -66,7 +72,7 @@ class ReservationController extends Controller
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($reservation);
 				try {
-					$em->flush($reservation);
+					$em->flush();
 					$this->addFlash('success', 'Your reservation has been saved');
 					return $this->redirectToRoute('home');
 				} catch (\Exception $e) {
@@ -86,6 +92,8 @@ class ReservationController extends Controller
 	}
 
 	/**
+	 * Ajax request to validate a reservation
+	 *
 	 * @Route("/validate/{id}", name="reservations_validate")
 	 * @Method({"GET"})
 	 * @Security("has_role('ROLE_CHIEF')")
@@ -93,7 +101,7 @@ class ReservationController extends Controller
 	 * @param Request $request
 	 * @param Reservation $reservation
 	 *
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 * @return JsonResponse
 	 */
 	public function validateAjaxAction(Request $request, Reservation $reservation)
 	{
@@ -104,21 +112,23 @@ class ReservationController extends Controller
 		$reservation->setState(StateEnum::STATE_VALIDATED);
 		try {
 			$this->getDoctrine()->getManager()->flush();
-			return $this->json(array('error' => false));
+			return $this->json(array());
 		} catch (\Exception $e) {
-			return $this->json(array('error' => $e->getMessage(), 500));
+			return $this->json(array('error' => $e->getMessage()), 500);
 		}
 	}
 
 	/**
-	 * @Route("/refuse/{id}", name="reservations_refuse")
+	 * Ajax request to refuse a reservation
+	 *
+	 * @Route("/refuse/{id}", name="reservations_refuse", requirements={"id": "\d+"})
 	 * @Method({"GET"})
 	 * @Security("has_role('ROLE_CHIEF')")
 	 *
 	 * @param Request $request
 	 * @param Reservation $reservation
 	 *
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 * @return JsonResponse
 	 */
 	public function refuseAjaxAction(Request $request, Reservation $reservation)
 	{
@@ -129,9 +139,9 @@ class ReservationController extends Controller
 		$reservation->setState(StateEnum::STATE_REFUSED);
 		try {
 			$this->getDoctrine()->getManager()->flush();
-			return $this->json(array('error' => false));
+			return $this->json(array());
 		} catch (\Exception $e) {
-			return $this->json(array('error' => $e->getMessage(), 500));
+			return $this->json(array('error' => $e->getMessage()), 500);
 		}
 	}
 }

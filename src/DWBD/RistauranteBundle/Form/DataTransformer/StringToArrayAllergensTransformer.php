@@ -5,6 +5,12 @@ namespace DWBD\RistauranteBundle\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+/**
+ * Class StringToArrayAllergensTransformer
+ * Allow to transform an array of allergens into a string : each allergen is separated by a line return
+ * 
+ * @package DWBD\RistauranteBundle\Form\DataTransformer
+ */
 class StringToArrayAllergensTransformer implements DataTransformerInterface
 {
 	/**

@@ -2,7 +2,7 @@
 
 namespace DWBD\SecurityBundle\Command;
 
-
+use DWBD\SecurityBundle\Entity\Enum\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -11,17 +11,24 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
+/**
+ * Class CreateUserCommand
+ * Allows to create a user with his username, password, email and role
+ *
+ * @package DWBD\SecurityBundle\Command
+ */
 class CreateUserCommand extends ContainerAwareCommand
 {
-	private static $allowedRoles = ["ROLE_WAITER", "ROLE_EDITOR", "ROLE_REVIEWER", "ROLE_CHIEF", "ROLE_ADMIN"];
-	private static $defaultRole  = "ROLE_WAITER";
+	private static $allowedRoles;
+	private static $defaultRole = "ROLE_WAITER";
 
 	protected function configure()
 	{
+		self::$allowedRoles = RoleEnum::getRoles();
 		$this
 			->setName('security:create-user')
 			->setDescription('Create new user.')
-			->setHelp('This command allows you to create one user...'.PHP_EOL.
+			->setHelp('This command allows you to create one user...' . PHP_EOL .
 				'Syntax : security:create-user username password email role')
 			->addArgument('username', InputArgument::REQUIRED, 'The username of the user.')
 			->addArgument('password', InputArgument::REQUIRED, 'The password of the user')
@@ -31,15 +38,15 @@ class CreateUserCommand extends ContainerAwareCommand
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$helper   = $this->getHelper('question');
+		$helper = $this->getHelper('question');
 		$username = $input->getArgument('username');
 		$password = $input->getArgument('password');
-		$email	  = $input->getArgument('email');
-		$role 	  = $input->getArgument('role');
+		$email = $input->getArgument('email');
+		$role = $input->getArgument('role');
 
 		if (!in_array($role, self::$allowedRoles)) {
 			$output->writeln('The role you choose is not allowed.');
-			$question = new ConfirmationQuestion("Continue with default role : ".self::$defaultRole." ?", false);
+			$question = new ConfirmationQuestion("Continue with default role : " . self::$defaultRole . " ?", false);
 
 			if (!$helper->ask($input, $output, $question)) {
 				return;
@@ -55,7 +62,7 @@ class CreateUserCommand extends ContainerAwareCommand
 				->setUsername($username)
 				->setPassword($hash)
 				->setEmail($email)
-				->setRole([$role]);
+				->setRoles([$role]);
 
 			$manager = $this->getContainer()->get('doctrine')->getManager();
 			$manager->persist($user);

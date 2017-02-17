@@ -2,9 +2,9 @@
 
 namespace DWBD\RistauranteBundle\Form\Type;
 
-use DWBD\RistauranteBundle\Entity\CategoryEnum;
+use DWBD\RistauranteBundle\Entity\Enum\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Dish;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use DWBD\RistauranteBundle\Form\DataTransformer\StringToArrayAllergensTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -16,6 +16,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class DishType
+ * @package DWBD\RistauranteBundle\Form\Type
+ */
 class DishType extends AbstractType
 {
 	/**

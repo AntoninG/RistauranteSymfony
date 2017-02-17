@@ -6,6 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use \Symfony\Component\HttpFoundation\Response;
 
@@ -20,10 +21,9 @@ class SecurityController extends Controller
 	 * @Route("/login", name="login")
 	 * @Method({"GET", "POST"})
 	 *
-	 * @param Request $request
 	 * @return Response
 	 */
-	public function loginAction(Request $request)
+	public function loginAction()
 	{
 		$authenticationUtils = $this->get('security.authentication_utils');
 
@@ -44,9 +44,8 @@ class SecurityController extends Controller
 	/**
 	 * @Route("/logout", name="logout")
 	 *
-	 * @param Request $request
 	 */
-	public function logoutAction(Request $request)
+	public function logoutAction()
 	{
 	}
 
@@ -55,7 +54,7 @@ class SecurityController extends Controller
 	 * @Method({"POST"})
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @return RedirectResponse
 	 */
 	public function resetPasswordAction(Request $request)
 	{
@@ -74,11 +73,8 @@ class SecurityController extends Controller
 		$encoded = $this->get('security.password_encoder')->encodePassword($user, $newPassword);
 		$user->setPassword($encoded);
 
-		$em = $this->getDoctrine()->getManager();
-		$em->persist($user);
-
 		try {
-			$em->flush($user);
+			$this->getDoctrine()->getManager()->flush();
 		} catch (Exception $e) {
 			$this->addFlash('danger', 'An error occurred during the process. Please contact your administrator.');
 			$this->get('logger')->error($e->getMessage());
@@ -102,6 +98,11 @@ class SecurityController extends Controller
 		return $this->redirectToRoute('login');
 	}
 
+	/**
+	 * Generates a random string usable as a password
+	 *
+	 * @return string
+	 */
 	private function randomPassword()
 	{
 		$alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';

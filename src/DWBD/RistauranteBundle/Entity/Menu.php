@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Enum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DWBD\SecurityBundle\Entity\User;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

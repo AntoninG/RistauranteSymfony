@@ -6,6 +6,10 @@ namespace DWBD\RistauranteBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * Class Configuration
+ * @package DWBD\RistauranteBundle\DependencyInjection
+ */
 class Configuration implements ConfigurationInterface
 {
 	/**

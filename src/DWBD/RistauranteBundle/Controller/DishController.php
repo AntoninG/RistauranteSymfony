@@ -3,16 +3,19 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use DWBD\RistauranteBundle\Entity\CategoryEnum;
+use DWBD\RistauranteBundle\Entity\Enum\CategoryEnum;
 use DWBD\RistauranteBundle\Entity\Dish;
-use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Entity\Enum\StateEnum;
 use DWBD\RistauranteBundle\Form\Type\DishType;
-use DWBD\SecurityBundle\Entity\RoleEnum;
+use DWBD\SecurityBundle\Entity\Enum\RoleEnum;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Form;
 
 /**
  * Dish controller.
@@ -27,6 +30,10 @@ class DishController extends Controller
 	 * @Route("/index", name="dishes_index")
 	 * @Method("GET")
 	 * @Security("has_role('ROLE_WAITER')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response
 	 */
 	public function indexAction(Request $request)
 	{
@@ -61,6 +68,10 @@ class DishController extends Controller
 	 * @Route("/new", name="dishes_new")
 	 * @Method({"GET", "POST"})
 	 * @Security("has_role('ROLE_EDITOR')")
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function newAction(Request $request)
 	{
@@ -78,7 +89,7 @@ class DishController extends Controller
 			$em->persist($dish);
 
 			try {
-				$em->flush($dish);
+				$em->flush();
 				return $this->redirectToRoute('dishes_show', array('id' => $dish->getId()));
 			} catch (UniqueConstraintViolationException $violationException) {
 				$this->addFlash('danger', 'The title you choose is already used.');
@@ -99,9 +110,13 @@ class DishController extends Controller
 	/**
 	 * Finds and displays a dish entity.
 	 *
-	 * @Route("/show/{id}", name="dishes_show")
+	 * @Route("/show/{id}", name="dishes_show", requirements={"id": "\d+"})
 	 * @Method("GET")
 	 * @Security("has_role('ROLE_WAITER')")
+	 *
+	 * @param Dish $dish
+	 *
+	 * @return Response
 	 */
 	public function showAction(Dish $dish)
 	{
@@ -125,9 +140,14 @@ class DishController extends Controller
 	/**
 	 * Displays a form to edit an existing dish entity.
 	 *
-	 * @Route("/edit/{id}", name="dishes_edit")
+	 * @Route("/edit/{id}", name="dishes_edit", requirements={"id": "\d+"})
 	 * @Method({"GET", "POST"})
 	 * @Security("has_role('ROLE_EDITOR')")
+	 *
+	 * @param Request $request
+	 * @param Dish $dish
+	 *
+	 * @return Response|RedirectResponse
 	 */
 	public function editAction(Request $request, Dish $dish)
 	{
@@ -164,9 +184,14 @@ class DishController extends Controller
 	/**
 	 * Deletes a dish entity.
 	 *
-	 * @Route("/delete/{id}", name="dishes_delete")
+	 * @Route("/delete/{id}", name="dishes_delete", requirements={"id": "\d+"})
 	 * @Method("DELETE")
 	 * @Security("has_role('ROLE_CHIEF')")
+	 *
+	 * @param Request $request
+	 * @param Dish $dish
+	 *
+	 * @return RedirectResponse
 	 */
 	public function deleteAction(Request $request, Dish $dish)
 	{
@@ -176,7 +201,7 @@ class DishController extends Controller
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->getDoctrine()->getManager();
 			$em->remove($dish);
-			$em->flush($dish);
+			$em->flush();
 		}
 
 		return $this->redirectToRoute('dishes_index');
@@ -187,7 +212,7 @@ class DishController extends Controller
 	 *
 	 * @param Dish $dish The dish entity
 	 *
-	 * @return \Symfony\Component\Form\Form The form
+	 * @return Form The form
 	 */
 	private function createDeleteForm(Dish $dish)
 	{
