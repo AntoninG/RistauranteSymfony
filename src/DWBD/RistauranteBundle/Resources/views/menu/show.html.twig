@@ -113,14 +113,14 @@
     {% if is_granted('ROLE_EDITOR') %}
         <div class="row">
             <div class="col-sm-1">
-                <a href="{{ path('menus_edit', { 'id': menu.id }) }}" class="btn btn-primary" title="Edit dish">
+                <a href="{{ path('menus_edit', { 'id': menu.id }) }}" class="btn btn-primary" title="Edit menu">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Edit
                 </a>
             </div>
             <div class="col-sm-1 pull-right">
                 {{ form_start(delete_form) }}
-                <button type="submit" value="Delete" class="btn btn-danger" title="Delete dish">
+                <button type="submit" value="Delete" class="btn btn-danger" title="Delete menu">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                     Delete
                 </button>

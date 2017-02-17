@@ -18,7 +18,7 @@
                     <tbody>
                     {% for menu in pager.entities %}
                         <tr>
-                            <td><a href="{{ path('menus_show', { 'id': menu.id }) }}">{{ menu.title }}</a></td>
+                            <td><a href="{{ path('menus_show', { 'id': menu.id }) }}" target="_blank">{{ menu.title }}</a></td>
                             <td>{{ menu.price }}</td>
                             {% if is_granted('ROLE_EDITOR') %}
                                 <td class="{% if menu.dishes is not empty %}success{% else %}warning{% endif %}">
@@ -43,13 +43,13 @@
                             {% endif %}
                             <td>
                                 <a href="{{ path('menus_show', { 'id': menu.id }) }}" title="Show menu"
-                                   class="btn btn-info btn-sm">
+                                   class="btn btn-info btn-sm" target="_blank">
                                     <i class="fa fa-search-plus" aria-hidden="true"></i>
                                     Show
                                 </a>
                                 {% if is_granted('ROLE_EDITOR') %}
                                     <a href="{{ path('menus_edit', { 'id': menu.id }) }}" title="Edit menu"
-                                       class="btn btn-primary btn-sm">
+                                       class="btn btn-primary btn-sm" target="_blank">
                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                         Edit
                                     </a>

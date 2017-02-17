@@ -36,12 +36,12 @@
                         <td>{{ reservation.phone }}</td>
                         {% if is_granted('ROLE_CHIEF') %}
                             <td>
-                                <button class="btn btn-primary"
+                                <button class="btn btn-primary btn-sm"
                                         data-url="{{ path('reservations_validate', {id: reservation.id}) }}"
                                         data-toggle="modal" data-target="#modalConfirmChange">
                                     <i class="fa fa-check"></i> Validate
                                 </button>
-                                <button class="btn btn-danger"
+                                <button class="btn btn-danger btn-sm"
                                         data-url="{{ path('reservations_refuse', {id: reservation.id}) }}"
                                         data-toggle="modal" data-target="#modalConfirmChange">
                                     <i class="fa fa-times"></i> Refuse

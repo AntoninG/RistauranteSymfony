@@ -61,7 +61,7 @@ class Menu
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
 	 * @Assert\GreaterThanOrEqual(value="1")
-	 * @Assert\LessThan(value="45")
+	 * @Assert\LessThanOrEqual(value="45")
 	 */
 	private $displayOrder;
 

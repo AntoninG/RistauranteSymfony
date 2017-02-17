@@ -1,0 +1,55 @@
+{% extends '::base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body, html {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-image: url(../img/cook-background.jpg);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-info">Dashboard</h1>
+    <div class="space"></div>
+
+    <div class="row">
+        {% if menus is not empty %}
+            <div class="col-xs-12">
+                <div class="jumbotron">
+                    <h4>Our {{ menus|length }} most appreciated menu(s)</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover table-striped">
+                            <tbody>
+                            {% for menu in menus %}
+                                <tr>
+                                    <td><a href="{{ path('menus_show', {id: menu.id}) }}" target="_blank">{{ menu.title }}</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="jumbotron">
+                <h4>All our menus here</h4>
+                <p><a href="{{ path('menus_index') }}"  target="_blank" class="btn btn-primary" role="button">Follow the link</a></p>
+            </div>
+        </div>
+
+        <div class="col-xs-6">
+            <div class="jumbotron">
+                <h4>All our dishes here</h4>
+                <p><a href="{{ path('dishes_index') }}"  target="_blank" class="btn btn-primary" role="button">Follow the link</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

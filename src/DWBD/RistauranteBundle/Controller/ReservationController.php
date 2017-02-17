@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use \Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 
 /**
  * Reservation controller.
@@ -38,7 +39,10 @@ class ReservationController extends Controller
 		$limit = $request->get('limit', 15);
 
 		$em = $this->getDoctrine()->getManager();
-		$reservations = $em->getRepository('DWBDRistauranteBundle:Reservation')->findBy(array('state' => StateEnum::STATE_WAITING), array('date' => 'ASC', 'time' => 'ASC'));
+		$reservations = $em->getRepository('DWBDRistauranteBundle:Reservation')->findBy(
+			array('state' => StateEnum::STATE_WAITING),
+			array('date' => 'ASC', 'time' => 'ASC', 'number' => 'DESC', 'name' => 'ASC')
+		);
 
 		$pager = $this->get('app.pager_factory')->createPager($reservations, $page, $limit, 'reservations_index');
 
@@ -55,7 +59,6 @@ class ReservationController extends Controller
 	 *
 	 * @Route("/new", name="reservations_new")
 	 * @Method({"GET", "POST"})
-	 * @Security("has_role('IS_AUTHENTICATED_FULLY')")
 	 *
 	 * @param Request $request
 	 *
@@ -63,6 +66,11 @@ class ReservationController extends Controller
 	 */
 	public function newAction(Request $request)
 	{
+		// Only anonymous user can create reservation
+		if (!$this->get('security.token_storage')->getToken() instanceof AnonymousToken) {
+			throw $this->createAccessDeniedException();
+		}
+
 		$reservation = new Reservation();
 		$form = $this->createForm(ReservationType::class, $reservation);
 		$form->handleRequest($request);

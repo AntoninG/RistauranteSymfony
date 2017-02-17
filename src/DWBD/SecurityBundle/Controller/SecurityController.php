@@ -47,6 +47,7 @@ class SecurityController extends Controller
 	 */
 	public function logoutAction()
 	{
+		$this->get('security.token_storage')->setToken(null);
 	}
 
 	/**

@@ -48,8 +48,10 @@ class Dish
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="description", type="text", nullable=true)
+	 * @ORM\Column(name="description", type="text")
 	 *
+	 * @Assert\NotNull()
+	 * @Assert\NotBlank()
 	 * @Assert\Length(max="6000", min="15")
 	 * @Assert\Type(type="string")
 	 */

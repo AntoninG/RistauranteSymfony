@@ -4,6 +4,10 @@ html {
 	position: relative;
 	min-height: 100%;
 }
+body > section > .container {
+	margin-bottom: 60px;
+}
+
 footer {
 	margin: 0 !important;
 }

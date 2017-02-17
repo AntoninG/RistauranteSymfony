@@ -1,0 +1,23 @@
+{% extends '::base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body, html {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-image: url(../img/cook-background.jpg);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-info">Ristaurante Bellissima</h1>
+    <div class="row">
+        <div class="jumbotron">
+            <h3>Welcome among us</h3>
+            <p>We are happy to let you know you are able to book a table in our restaurant !</p>
+            <p><a class="btn btn-primary btn-lg" href="{{ path('reservations_new') }}" role="button">Book now !</a></p>
+        </div>
+    </div>
+{% endblock %}

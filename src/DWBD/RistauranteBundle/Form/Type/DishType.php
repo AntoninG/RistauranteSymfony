@@ -41,7 +41,6 @@ class DishType extends AbstractType
 			->add('description', TextareaType::class, array(
 					'label' => 'Description',
 					'trim' => true,
-					'required' => false,
 					'attr' => array(
 						'class' => 'form-control',
 						'placeholder' => 'A short description',
