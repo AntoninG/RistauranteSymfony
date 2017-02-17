@@ -115,6 +115,7 @@ class Menu
 	public function __construct()
 	{
 		$this->dishes = new ArrayCollection();
+		$this->hasBeenRefusedOrValidated = false;
 	}
 
 	/**
