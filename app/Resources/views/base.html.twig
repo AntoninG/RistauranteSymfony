@@ -46,7 +46,7 @@
                         {% if app.user and is_granted('ROLE_CHIEF') %}
                             <a href="{{ url('reservations_index') }}"><i class="fa fa-calendar" aria-hidden="true"></i>
                                 Reservations</a>
-                        {% else %}
+                        {% elseif app.user is not defined %}
                             <a href="{{ url('reservations_new') }}"><i class="fa fa-calendar" aria-hidden="true"></i>
                                 Reservations</a>
                         {% endif %}
@@ -133,7 +133,7 @@
 </footer>
 
 {% block javascripts %}
-    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.1.1.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script>

@@ -7,6 +7,7 @@ use DWBD\SecurityBundle\Entity\User;
 use DWBD\SecurityBundle\Form\DataTransformer\StringToArrayUserTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -28,7 +29,7 @@ class UserType extends AbstractType
 				'trim' => true
 			)
 		)
-			->add('email', TextType::class, array(
+			->add('email', EmailType::class, array(
 					'attr' => array('class' => 'form-control', 'placeholder' => 'yourname@domaine.com'),
 					'trim' => true
 				)

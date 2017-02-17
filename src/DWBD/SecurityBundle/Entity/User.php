@@ -77,7 +77,7 @@ class User implements UserInterface, \Serializable
 	 *     length=40
 	 * )
 	 *
-	 * @Enum({RoleEnum::USER, RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN})
+	 * @Enum({RoleEnum::WAITER, RoleEnum::EDITOR, RoleEnum::REVIEWER, RoleEnum::CHIEF, RoleEnum::ADMIN})
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 */

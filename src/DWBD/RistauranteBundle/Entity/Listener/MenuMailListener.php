@@ -11,7 +11,7 @@ use DWBD\RistauranteBundle\Entity\StateEnum;
 use DWBD\SecurityBundle\Entity\RoleEnum;
 use DWBD\SecurityBundle\Entity\User;
 
-class MenuListener
+class MenuMailListener
 {
 	/** @var \Swift_Mailer */
 	private $mailer;
@@ -39,7 +39,13 @@ class MenuListener
 		if ($menu->getPreviousState() != $menu->getState() && $menu->hasBeenRefusedOrValidated()) {
 			if ($menu->getAuthor()->getRoles()[0] == RoleEnum::EDITOR) {
 				$author = $menu->getAuthor();
-				$message = $this->generateMail($menu, "Ristaurante - Your menu had a change of state", $author->getUsername(), $author->getEmail());
+				$message = $this->generateMail(
+					'entity-state-changed.html.twig',
+					$menu,
+					"Ristaurante - Your menu had a change of state",
+					$author->getUsername(),
+					$author->getEmail()
+				);
 
 				try {
 					$this->mailer->send($message);
@@ -68,7 +74,13 @@ class MenuListener
 				$emails = array_map(function (User $user) {
 					return $user->getEmail();
 				}, $emails);
-				$message = $this->generateMail($menu, "[INFO] - Ristaurante - A new menu is available", 'waiter', $emails);
+				$message = $this->generateMail(
+					'entity-state-changed.html.twig',
+					$menu,
+					"[INFO] - Ristaurante - A new menu is available",
+					'waiter',
+					$emails
+				);
 
 				try {
 					$this->mailer->send($message);
@@ -79,19 +91,57 @@ class MenuListener
 	}
 
 	/**
+	 * @PostPersist()
+	 * @PostUpdate()
+	 *
+	 * @param Menu $menu
+	 * @param LifecycleEventArgs $event
+	 */
+	public function preventPublishersHandler(Menu $menu, LifecycleEventArgs $event)
+	{
+		if (($menu->getPreviousState() != $menu->getState()) || is_null($menu->getPreviousState()) && $menu->getState() == StateEnum::STATE_WAITING) {
+			if ($menu->getAuthor()->getRoles()[0] == RoleEnum::EDITOR) {
+				$publishers = $event->getObjectManager()->getRepository('DWBDSecurityBundle:User')->findByRoles(array(
+					'ROLE_REVIEWER', 'ROLE_CHIEF', 'ROLE_ADMIN'
+				));
+				$chunk = array_chunk($publishers, 10);
+
+				foreach ($chunk as $emails) {
+					$emails = array_map(function (User $user) {
+						return $user->getEmail();
+					}, $emails);
+					$message = $this->generateMail(
+						'entity-waiting-state.html.twig',
+						$menu,
+						"[INFO] - Ristaurante - A new menu is waiting for validation",
+						'publisher',
+						$emails
+					);
+
+					try {
+						$this->mailer->send($message);
+					} catch (\Exception $e) {
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param string $view
 	 * @param Menu $menu
 	 * @param string $subject
 	 * @param string $user
 	 * @param string|array $recipient
 	 */
-	private function generateMail(Menu $menu, $subject, $user, $recipient)
+	private function generateMail($view, Menu $menu, $subject, $user, $recipient)
 	{
 		$message = \Swift_Message::newInstance()
 			->setSubject($subject)
 			->setFrom($this->mailerUser)
 			->setBody(
 				$this->twig->render(
-					'emails/entity-state-changed.html.twig',
+					'emails/' . $view,
 					array(
 						'entityName' => 'menu',
 						'user' => $user,

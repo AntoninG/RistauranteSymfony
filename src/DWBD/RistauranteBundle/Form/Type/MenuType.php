@@ -39,7 +39,9 @@ class MenuType extends AbstractType
 				'scale' => 2,
 				'attr' => array(
 					'class' => 'form-control',
-					'placeholder' => 'Amount (10.99)'
+					'placeholder' => 'Amount (10.99)',
+					'min' => 2,
+					'max' => 3000
 				)
 
 			))
@@ -48,7 +50,7 @@ class MenuType extends AbstractType
 				'required' => true,
 				'label' => 'Display Order',
 				'scale' => 0,
-				'attr' => array('class' => 'form-control')
+				'attr' => array('class' => 'form-control','min' => 1, 'max' => 45)
 			))
 			->add('dishes', EntityType::class, array(
 				'label' => 'Dishes',

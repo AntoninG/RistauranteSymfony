@@ -3,7 +3,8 @@
 namespace DWBD\RistauranteBundle\Controller;
 
 use DWBD\RistauranteBundle\Entity\Reservation;
-use DWBD\RistauranteBundle\Form\ReservationType;
+use DWBD\RistauranteBundle\Entity\StateEnum;
+use DWBD\RistauranteBundle\Form\Type\ReservationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -25,14 +26,20 @@ class ReservationController extends Controller
 	 *
 	 * @Security("has_role('ROLE_CHIEF')")
 	 */
-	public function indexAction()
+	public function indexAction(Request $request)
 	{
-		$em = $this->getDoctrine()->getManager();
+		$page = $request->get('page', 1);
+		$limit = $request->get('limit', 15);
 
-		$reservations = $em->getRepository('DWBDRistauranteBundle:Reservation')->findAll();
+		$em = $this->getDoctrine()->getManager();
+		$reservations = $em->getRepository('DWBDRistauranteBundle:Reservation')->findBy(array('state' => StateEnum::STATE_WAITING), array('date' => 'ASC', 'time' => 'ASC'));
+
+		$pager = $this->get('app.pager_factory')->createPager($reservations, $page, $limit, 'reservations_index');
 
 		return $this->render('DWBDRistauranteBundle:reservation:index.html.twig', array(
-			'reservations' => $reservations,
+			'title' => 'Reservations',
+			'pager' => $pager,
+			'states' => StateEnum::getStatesTranslation(),
 			'active_link' => 'reservations'
 		));
 	}
@@ -42,107 +49,92 @@ class ReservationController extends Controller
 	 *
 	 * @Route("/new", name="reservations_new")
 	 * @Method({"GET", "POST"})
-	 * @Security("has_role('ROLE_USER')")
 	 */
 	public function newAction(Request $request)
 	{
+		$securityContext = $this->get('security.authorization_checker');
+		if ($securityContext->isGranted('IS_AUTHENTICATED_FULLY')) {
+			throw $this->createAccessDeniedException();
+		}
+
 		$reservation = new Reservation();
 		$form = $this->createForm(ReservationType::class, $reservation);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($reservation);
-			$em->flush($reservation);
-
-			return $this->redirectToRoute('reservations_show', array('id' => $reservation->getId()));
+			if ($reservation->getDate()->getTimestamp() > mktime(23, 59, 59)) {
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($reservation);
+				try {
+					$em->flush($reservation);
+					$this->addFlash('success', 'Your reservation has been saved');
+					return $this->redirectToRoute('home');
+				} catch (\Exception $e) {
+					$this->addFlash('danger', 'An error occurred, please, contact an administrator');
+				}
+			} else {
+				$this->addFlash('danger', 'Your reservation must be for tomorrow or later');
+			}
 		}
 
 		return $this->render('DWBDRistauranteBundle:reservation:new.html.twig', array(
 			'reservation' => $reservation,
 			'form' => $form->createView(),
+			'title' => 'New reservation',
 			'active_link' => 'reservations'
 		));
 	}
 
 	/**
-	 * Finds and displays a reservation entity.
-	 *
-	 * @Route("/show/{id}", name="reservations_show")
-	 * @Method("GET")
+	 * @Route("/validate/{id}", name="reservations_validate")
+	 * @Method({"GET"})
 	 * @Security("has_role('ROLE_CHIEF')")
-	 */
-	public function showAction(Reservation $reservation)
-	{
-		$deleteForm = $this->createDeleteForm($reservation);
-
-		return $this->render('DWBDRistauranteBundle:reservation:show.html.twig', array(
-			'reservation' => $reservation,
-			'delete_form' => $deleteForm->createView(),
-			'active_link' => 'reservations'
-		));
-	}
-
-	/**
-	 * Displays a form to edit an existing reservation entity.
 	 *
-	 * @Route("/edit/{id}", name="reservations_edit")
-	 * @Method({"GET", "POST"})
-	 * @Security("has_role('ROLE_CHIEF')")
+	 * @param Request $request
+	 * @param Reservation $reservation
+	 *
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
 	 */
-	public function editAction(Request $request, Reservation $reservation)
+	public function validateAjaxAction(Request $request, Reservation $reservation)
 	{
-		$deleteForm = $this->createDeleteForm($reservation);
-		$editForm = $this->createForm(ReservationType::class, $reservation);
-		$editForm->handleRequest($request);
-
-		if ($editForm->isSubmitted() && $editForm->isValid()) {
-			$this->getDoctrine()->getManager()->flush();
-
-			return $this->redirectToRoute('reservations_edit', array('id' => $reservation->getId()));
+		if (!$request->isXmlHttpRequest()) {
+			return $this->json(array());
 		}
 
-		return $this->render('DWBDRistauranteBundle:reservation:edit.html.twig', array(
-			'reservation' => $reservation,
-			'edit_form' => $editForm->createView(),
-			'delete_form' => $deleteForm->createView(),
-			'active_link' => 'reservations'
-		));
+		$reservation->setState(StateEnum::STATE_VALIDATED);
+		try {
+			$this->getDoctrine()->getManager()->persist($reservation);
+			$this->getDoctrine()->getManager()->flush($reservation);
+			return $this->json(array('error' => false));
+		} catch (\Exception $e) {
+			return $this->json(array('error' => $e->getMessage(), 500));
+		}
 	}
 
 	/**
-	 * Deletes a reservation entity.
-	 *
-	 * @Route("/delete/{id}", name="reservations_delete")
-	 * @Method("DELETE")
+	 * @Route("/refuse/{id}", name="reservations_refuse")
+	 * @Method({"GET"})
 	 * @Security("has_role('ROLE_CHIEF')")
+	 *
+	 * @param Request $request
+	 * @param Reservation $reservation
+	 *
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
 	 */
-	public function deleteAction(Request $request, Reservation $reservation)
+	public function refuseAjaxAction(Request $request, Reservation $reservation)
 	{
-		$form = $this->createDeleteForm($reservation);
-		$form->handleRequest($request);
-
-		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->getDoctrine()->getManager();
-			$em->remove($reservation);
-			$em->flush($reservation);
+		if (!$request->isXmlHttpRequest()) {
+			return $this->json(array());
 		}
 
-		return $this->redirectToRoute('reservations_index');
-	}
-
-	/**
-	 * Creates a form to delete a reservation entity.
-	 *
-	 * @param Reservation $reservation The reservation entity
-	 *
-	 * @return \Symfony\Component\Form\Form The form
-	 */
-	private function createDeleteForm(Reservation $reservation)
-	{
-		return $this->createFormBuilder()
-			->setAction($this->generateUrl('reservations_delete', array('id' => $reservation->getId())))
-			->setMethod('DELETE')
-			->getForm();
+		$reservation->setState(StateEnum::STATE_REFUSED);
+		try {
+			$this->getDoctrine()->getManager()->persist($reservation);
+			$this->getDoctrine()->getManager()->flush($reservation);
+			return $this->json(array('error' => false));
+		} catch (\Exception $e) {
+			return $this->json(array('error' => $e->getMessage(), 500));
+		}
 	}
 }
+

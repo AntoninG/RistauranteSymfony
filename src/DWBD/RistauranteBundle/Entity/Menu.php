@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="menu")
  * @ORM\Entity(repositoryClass="DWBD\RistauranteBundle\Repository\MenuRepository")
+ * @ORM\EntityListeners({"DWBD\RistauranteBundle\Entity\Listener\MenuMailListener"})
  */
 class Menu
 {
@@ -58,6 +59,8 @@ class Menu
 	 * @Assert\NotNull()
 	 * @Assert\NotBlank()
 	 * @Assert\Type(type="integer")
+	 * @Assert\GreaterThanOrEqual(value="1")
+	 * @Assert\LessThan(value="45")
 	 */
 	private $displayOrder;
 

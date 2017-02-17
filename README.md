@@ -7,5 +7,7 @@ To create your first user : security:create-user (see the help)
 
 To check all menus without dishes : app:check-menus
 
+Only user with ROLE_ADMIN role has the access to the user administration part of the website
 
-SensioLabs score on Month Day, Year, hou:minutes am|pm :
+
+SensioLabs Insight score on 17/02/2017 : Gold Medal with 89/100

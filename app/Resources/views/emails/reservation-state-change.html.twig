@@ -1,0 +1,15 @@
+<h3>Deer {{ reservation.name }}</h3>
+
+{% if refused %}
+    <p>We regret to announce you that your reservation
+        on {{ reservation.date|date('d/m/Y') }} {{ reservation.time|date('H:i') }} for {{ reservation.number }} people
+        has been refused.</p>
+    <p>Sorry for the inconvenience. Do not hesitate to ask for another reservation.</p>
+{% else %}
+    <p>We are pleased to announce you that your reservation
+        on {{ reservation.date|date('d/m/Y') }} {{ reservation.time|date('H:i') }} for {{ reservation.number }} people
+        has been accepted.</p>
+    <p>All the team is very happy to meet you soon.</p>
+{% endif %}
+
+<p><i>Best regards</i></p>
