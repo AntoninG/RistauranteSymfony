@@ -103,8 +103,7 @@ class ReservationController extends Controller
 
 		$reservation->setState(StateEnum::STATE_VALIDATED);
 		try {
-			$this->getDoctrine()->getManager()->persist($reservation);
-			$this->getDoctrine()->getManager()->flush($reservation);
+			$this->getDoctrine()->getManager()->flush();
 			return $this->json(array('error' => false));
 		} catch (\Exception $e) {
 			return $this->json(array('error' => $e->getMessage(), 500));
@@ -129,8 +128,7 @@ class ReservationController extends Controller
 
 		$reservation->setState(StateEnum::STATE_REFUSED);
 		try {
-			$this->getDoctrine()->getManager()->persist($reservation);
-			$this->getDoctrine()->getManager()->flush($reservation);
+			$this->getDoctrine()->getManager()->flush();
 			return $this->json(array('error' => false));
 		} catch (\Exception $e) {
 			return $this->json(array('error' => $e->getMessage(), 500));
